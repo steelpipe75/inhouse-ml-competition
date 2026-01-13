@@ -1,2 +1,112 @@
 # inhouse-ml-competition
+
 機械学習コンペ運営アプリをStramlitで作成
+
+## プロジェクト概要
+
+このリポジトリは、内輪向けの機械学習コンペティションを運営するためのWebアプリケーションです。  
+Streamlitを用いて、以下の機能を提供します。
+
+- コンペ概要・データの公開
+- 予測結果（CSVファイル）の投稿と自動スコアリング
+- リーダーボードによるスコアランキング表示
+
+## ディレクトリ構成
+
+### 変更しないでください（アプリの構造に関わるファイル・フォルダ）
+
+- `pages/` : Streamlitの各ページ（概要・投稿・リーダーボード）
+- `Home.py` : Streamlitアプリのメインファイル
+- `utils.py` : 共通関数ファイル
+
+### ユーザーがカスタマイズするファイル・フォルダ
+
+- `competition_files/data/` : 「概要・データ」で配布するファイル
+- `competition_files/content/` : 問題説明Markdown・ホーム画面Markdown
+- `config.py` : 設定ファイル（基本設定）。詳細は後述。
+- `custom_settings.py` : ユーザーがカスタマイズのために編集する設定ファイル。詳細は後述。
+
+## 設定ファイルの説明
+
+### `config.py`
+アプリの基本設定を定義します。
+
+| 変数名 | 説明 |
+|---|---|
+| `SPREADSHEET_NAME` | 連携するGoogleスプレッドシートの名前 |
+| `LEADERBOARD_WORKSHEET_NAME` | リーダーボードが格納されるワークシート名 |
+| `GROUND_TRUTH_WORKSHEET_NAME` | 正解データが格納されるワークシート名 |
+| `IS_COMPETITION_RUNNING` | コンペ開催中かどうかのフラグ（`True`:開催中, `False`:終了後） |
+
+### `custom_settings.py`
+コンペの内容に合わせてユーザーがカスタマイズする項目を定義します。
+
+| 変数名 | 説明 |
+|---|---|
+| `DATA_DIR` | データファイル（学習・テスト等）を格納するディレクトリ |
+| `PROBLEM_FILE` | 問題説明Markdownファイルのパス |
+| `SAMPLE_SUBMISSION_FILE` | サンプル提出ファイルのパス |
+| `HOME_CONTENT_FILE` | Homeページのカスタマイズ用コンテンツファイルのパス |
+| `LEADERBOARD_SORT_ASCENDING` | リーダーボードのスコアソート順（`True`:昇順, `False`:降順） |
+| `score_submission` | public/privateスコアを計算する関数。コンペの評価指標に合わせてロジックを記述します。 |
+| `SUBMISSION_ADDITIONAL_INFO` | 投稿時にユーザーから追加で収集する情報を定義します。streamlitの入力ウィジェット設定を辞書のリストで指定します。 |
+| `LEADERBOARD_HEADER` | リーダーボード表示用のヘッダーリストを定義します。`SUBMISSION_ADDITIONAL_INFO`で追加した項目もここに追加します。 |
+| `GROUND_TRUTH_HEADER` | 正解データのヘッダーリストを定義します。スプレッドシートの列名と一致させる必要があります。 |
+
+## セットアップ方法
+
+1. 必要なパッケージのインストール
+
+```bash
+pip install -r requirements.txt
+```
+
+2. アプリの起動
+
+```bash
+streamlit run Home.py
+```
+
+3. Google Sheets API設定
+
+StreamlitアプリからGoogleスプレッドシートにアクセスするために、Google Cloud Platform (GCP) のサービスアカウント設定が必要です。
+
+1.  **GCPでサービスアカウントを作成**
+    *   Google Cloud Consoleにアクセスし、新しいプロジェクトを作成するか、既存のプロジェクトを選択します。
+    *   「APIとサービス」>「ライブラリ」から「Google Sheets API」と「Google Drive API」を検索し、有効にします。
+    *   「IAMと管理」>「サービスアカウント」に移動し、新しいサービスアカウントを作成します。
+    *   サービスアカウント作成時に「キーを作成」を選択し、「JSON」形式でキーファイルをダウンロードします。このファイルには、スプレッドシートへのアクセスに必要な認証情報が含まれています。
+
+2.  **.streamlit/secrets.tomlの設定**
+    *   ダウンロードしたJSONキーファイルの内容を、`.streamlit/secrets.toml`ファイルに記述します。
+    *   プロジェクトルートに `.streamlit` ディレクトリがない場合は作成します。
+    *   `.streamlit/secrets.toml.example`を参考に、JSONキーの内容を`[gcp_service_account]`セクションにペーストします。特に`private_key`の値は、JSONファイル内の `private_key` の値をそのままコピー＆ペーストしてください（改行コードなども含めて）。
+
+    **secrets.tomlの例:**
+    ```toml
+    [gcp_service_account]
+    type = "service_account"
+    project_id = "your-project-id"
+    private_key_id = "your-private-key-id"
+    private_key = "-----BEGIN PRIVATE KEY-----\n...your-private-key...\n-----END PRIVATE KEY-----\n" # JSONキーファイルからコピー
+    client_email = "your-client-email"
+    client_id = "your-client-id"
+    auth_uri = "https://accounts.google.com/o/oauth2/auth"
+    token_uri = "https://oauth2.googleapis.com/token"
+    auth_provider_x509_cert_url = "https://www.googleapis.com/oauth2/v1/certs"
+    client_x509_cert_url = "your-client-x509-cert-url"
+    universe_domain = "googleapis.com"
+    ```
+
+3.  **Googleスプレッドシートの共有設定**
+    *   コンペで使用するGoogleスプレッドシートを開きます。
+    *   スプレッドシートの「共有」設定を開き、サービスアカウントのメールアドレス（`client_email`の値）を「編集者」として追加します。
+
+## 使い方
+
+- サイドバーから「概要・データ」「投稿」「リーダーボード」ページに移動できます。
+- 投稿ページでユーザー名と予測CSVをアップロードすると、自動でスコア計算・リーダーボード反映されます。
+
+## ライセンス
+
+MIT License
