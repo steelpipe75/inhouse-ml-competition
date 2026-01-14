@@ -12,6 +12,11 @@ from custom_settings import (
 )
 from config import IS_COMPETITION_RUNNING
 
+# 認証チェック
+if not st.session_state.get("authenticated", False):
+    st.error("Home画面で合言葉を入力してください。")
+    st.stop()
+
 
 def render_additional_inputs() -> Dict:
     """

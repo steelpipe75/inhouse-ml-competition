@@ -4,6 +4,12 @@ import os
 from custom_settings import DATA_DIR, PROBLEM_FILE
 
 
+# 認証チェック
+if not st.session_state.get("authenticated", False):
+    st.error("Home画面で合言葉を入力してください。")
+    st.stop()
+
+
 def show_overview_and_data() -> None:
     st.title("概要・データ")
 

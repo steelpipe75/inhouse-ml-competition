@@ -6,6 +6,11 @@ from custom_settings import (
     filter_leaderboard,
 )
 
+# 認証チェック
+if not st.session_state.get("authenticated", False):
+    st.error("Home画面で合言葉を入力してください。")
+    st.stop()
+
 
 def show_leaderboard() -> None:
     st.title("リーダーボード")
