@@ -3,3 +3,6 @@ numpy
 gspread
 gspread-dataframe
 google-auth-oauthlib
+streamlit-screen-stats
+streamlit-browser-session-storage
+streamlit-local-storage

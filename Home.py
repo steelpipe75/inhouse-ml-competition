@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 from custom_settings import HOME_CONTENT_FILE
-from utils import check_password
+from utils import page_config, check_password
 
 
 def show_home_content():
@@ -18,6 +18,7 @@ def show_home_content():
 
 def main() -> None:
     """メイン関数"""
+    page_config()
     check_password()
     show_home_content()
 
