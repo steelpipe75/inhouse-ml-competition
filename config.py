@@ -4,7 +4,7 @@ LEADERBOARD_WORKSHEET_NAME = "leaderboard"  # リーダーボード用のワー�
 GROUND_TRUTH_WORKSHEET_NAME = "ground_truth"  # 正解データ用のワークシート名
 
 # --- Playground Page Settings ---
-PLAYGROUND_PAGE_URL = "https://steelpipe75.github.io/inhouse-ml-competition-playground-sample/"
+PLAYGROUND_PAGE_URL = "https://steelpipe75.github.io/inhouse-ml-competition-playground-sample/" # PlaygroundページのURL
 
 # --- Competition Settings ---
 IS_COMPETITION_RUNNING = (
