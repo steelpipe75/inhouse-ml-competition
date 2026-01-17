@@ -5,6 +5,10 @@ from custom_settings import (
     read_leaderboard,
     filter_leaderboard,
 )
+from utils import check_password
+
+# 認証チェック
+check_password()
 
 
 def show_leaderboard() -> None:

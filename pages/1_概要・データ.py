@@ -2,6 +2,10 @@ import streamlit as st
 import os
 
 from custom_settings import DATA_DIR, PROBLEM_FILE
+from utils import check_password
+
+# 認証チェック
+check_password()
 
 
 def show_overview_and_data() -> None:
