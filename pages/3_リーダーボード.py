@@ -5,11 +5,10 @@ from custom_settings import (
     read_leaderboard,
     filter_leaderboard,
 )
+from utils import check_password
 
 # 認証チェック
-if not st.session_state.get("authenticated", False):
-    st.error("Home画面で合言葉を入力してください。")
-    st.stop()
+check_password()
 
 
 def show_leaderboard() -> None:

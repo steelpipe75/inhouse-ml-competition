@@ -5,6 +5,8 @@ from gspread_dataframe import get_as_dataframe, set_with_dataframe
 from google.oauth2.service_account import Credentials
 import streamlit as st
 from gspread.worksheet import Worksheet
+import hashlib
+import hmac
 
 from config import (
     SPREADSHEET_NAME,
@@ -100,3 +102,42 @@ def write_submission_preproc(
 def write_submission_core(worksheet: Worksheet, df: pd.DataFrame) -> None:
     # スプレッドシート全体を更新
     set_with_dataframe(worksheet, df, resize=True)
+
+
+def check_password() -> None:
+    """
+    合言葉をチェックし、認証されていなければパスワード入力を表示し、
+    プログラムの実行を停止する。
+    認証済みの場合は何もしない。
+    """
+    # st.session_stateに"authenticated"がない場合はFalseをセット
+    if "authenticated" not in st.session_state:
+        st.session_state.authenticated = False
+
+    # 認証済みの場合は、ここで処理を終了
+    if st.session_state.authenticated:
+        return
+
+    # --- 以下、未認証の場合の処理 ---
+    st.title("内輪向け機械学習コンペアプリ")
+    st.subheader("合言葉を入力してください")
+    password = st.text_input("合言葉", type="password", key="password_input")
+
+    if st.button("ログイン"):
+        try:
+            correct_password_hash = st.secrets["APP_PASSWORD_HASH"]
+        except (KeyError, FileNotFoundError):
+            st.error("合言葉のハッシュが設定されていません。管理者にお問い合わせください。")
+            st.stop()
+
+        # 入力された合言葉をハッシュ化
+        password_hash = hashlib.sha256(password.encode()).hexdigest()
+
+        if hmac.compare_digest(password_hash, correct_password_hash):
+            st.session_state.authenticated = True
+            st.rerun()  # 認証後にページを再読み込み
+        else:
+            st.error("合言葉が違います。")
+
+    # 認証が完了するまで、これ以降のコードは実行させない
+    st.stop()
