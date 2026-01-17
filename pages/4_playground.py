@@ -1,8 +1,10 @@
 import streamlit as st
 import streamlit.components.v1 as components
-
-from utils import check_password
 from st_screen_stats import ScreenData
+
+from utils import page_config, check_password
+
+page_config()
 
 # 認証チェック
 check_password()
