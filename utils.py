@@ -114,6 +114,17 @@ def check_password() -> None:
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
 
+    # APP_PASSWORD_HASH が設定されているかチェックし、設定されていない場合は認証をスキップ
+    try:
+        _ = st.secrets["APP_PASSWORD_HASH"]
+        password_hash_exists = True
+    except (KeyError, FileNotFoundError):
+        password_hash_exists = False
+
+    if not password_hash_exists:
+        st.session_state.authenticated = True
+        return
+
     # 認証済みの場合は、ここで処理を終了
     if st.session_state.authenticated:
         return
@@ -124,11 +135,7 @@ def check_password() -> None:
     password = st.text_input("合言葉", type="password", key="password_input")
 
     if st.button("ログイン"):
-        try:
-            correct_password_hash = st.secrets["APP_PASSWORD_HASH"]
-        except (KeyError, FileNotFoundError):
-            st.error("合言葉のハッシュが設定されていません。管理者にお問い合わせください。")
-            st.stop()
+        correct_password_hash = st.secrets["APP_PASSWORD_HASH"]
 
         # 入力された合言葉をハッシュ化
         password_hash = hashlib.sha256(password.encode()).hexdigest()
