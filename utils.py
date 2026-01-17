@@ -104,6 +104,13 @@ def write_submission_core(worksheet: Worksheet, df: pd.DataFrame) -> None:
     set_with_dataframe(worksheet, df, resize=True)
 
 
+def page_config() -> None:
+    st.set_page_config(
+        layout="wide",
+        initial_sidebar_state="expanded",
+    )
+
+
 def check_password() -> None:
     """
     合言葉をチェックし、認証されていなければパスワード入力を表示し、

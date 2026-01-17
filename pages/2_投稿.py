@@ -11,7 +11,9 @@ from custom_settings import (
     write_submission,
 )
 from config import IS_COMPETITION_RUNNING
-from utils import check_password
+from utils import page_config, check_password
+
+page_config()
 
 # 認証チェック
 check_password()
