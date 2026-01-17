@@ -11,6 +11,10 @@ from custom_settings import (
     write_submission,
 )
 from config import IS_COMPETITION_RUNNING
+from utils import check_password
+
+# 認証チェック
+check_password()
 
 
 def render_additional_inputs() -> Dict:
