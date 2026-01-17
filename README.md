@@ -82,8 +82,17 @@ StreamlitアプリからGoogleスプレッドシートにアクセスするた�
     *   プロジェクトルートに `.streamlit` ディレクトリがない場合は作成します。
     *   `.streamlit/secrets.toml.example`を参考に、JSONキーの内容を`[gcp_service_account]`セクションにペーストします。特に`private_key`の値は、JSONファイル内の `private_key` の値をそのままコピー＆ペーストしてください（改行コードなども含めて）。
 
+    *   **APP_PASSWORD_HASHの設定**
+        アプリへのアクセスを制限したい場合、`APP_PASSWORD_HASH`を設定します。`generate_hash.py`スクリプトを使用してパスワードのハッシュ値を生成し、`.streamlit/secrets.toml`に記述してください。
+
+        ```toml
+        APP_PASSWORD_HASH = "生成されたハッシュ値"
+        ```
+
     **secrets.tomlの例:**
     ```toml
+    APP_PASSWORD_HASH = "your_sha256_hashed_password_here"
+    
     [gcp_service_account]
     type = "service_account"
     project_id = "your-project-id"
