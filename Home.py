@@ -3,6 +3,11 @@ import os
 from custom_settings import HOME_CONTENT_FILE
 from utils import check_password
 
+st.set_page_config(
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
 
 def show_home_content():
     """ホーム画面のコンテンツを表示する"""
