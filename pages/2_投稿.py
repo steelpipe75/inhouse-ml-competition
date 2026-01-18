@@ -64,30 +64,31 @@ def show_submission() -> None:
                 elif len(submission_df) != len(sample_df):
                     st.error("行数が期待する形と一致していません。")
                 else:
-                    public_score, private_score = score_submission(
-                        submission_df, ground_truth_df
-                    )
-
-                    # 投稿データを作成
-                    submission_data = {
-                        "username": username,
-                        "public_score": public_score,
-                        "private_score": private_score,
-                        "submission_time": datetime.datetime.now().strftime(
-                            "%Y-%m-%d %H:%M:%S"
-                        ),
-                    }
-                    submission_data.update(additional_inputs)
-
-                    # データを書き込み
-                    write_submission(submission_data)
-
-                    if IS_COMPETITION_RUNNING:
-                        st.success(f"投稿完了！Publicスコア: {public_score:.4f}")
-                    else:
-                        st.success(
-                            f"投稿完了！Publicスコア: {public_score:.4f} / Privateスコア: {private_score:.4f}"
+                    with st.spinner("投稿を処理中..."):
+                        public_score, private_score = score_submission(
+                            submission_df, ground_truth_df
                         )
+
+                        # 投稿データを作成
+                        submission_data = {
+                            "username": username,
+                            "public_score": public_score,
+                            "private_score": private_score,
+                            "submission_time": datetime.datetime.now().strftime(
+                                "%Y-%m-%d %H:%M:%S"
+                            ),
+                        }
+                        submission_data.update(additional_inputs)
+
+                        # データを書き込み
+                        write_submission(submission_data)
+
+                        if IS_COMPETITION_RUNNING:
+                            st.success(f"投稿完了！Publicスコア: {public_score:.4f}")
+                        else:
+                            st.success(
+                                f"投稿完了！Publicスコア: {public_score:.4f} / Privateスコア: {private_score:.4f}"
+                            )
             except Exception as e:
                 st.error(f"スコア計算または投稿処理中にエラーが発生しました: {e}")
 
