@@ -61,6 +61,8 @@ def show_submission() -> None:
 
                 if list(submission_df.columns) != list(sample_df.columns):
                     st.error("カラムが期待する形と一致していません。")
+                elif len(submission_df) != len(sample_df):
+                    st.error("行数が期待する形と一致していません。")
                 else:
                     public_score, private_score = score_submission(
                         submission_df, ground_truth_df
