@@ -13,3 +13,8 @@ IS_COMPETITION_RUNNING = (
 
 # --- Password Protection Settings ---
 PROTECT_ALL_PAGES = False  # Trueの場合、すべてのページを保護します。Falseの場合、投稿とリーダーボードページのみを保護します。
+
+# --- Page Settings ---
+PAGE_TITLE = "内輪向け機械学習コンペアプリ"
+PAGE_ICON = "🏆"
+

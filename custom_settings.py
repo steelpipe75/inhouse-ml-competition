@@ -13,6 +13,9 @@ from utils import (
 from config import IS_COMPETITION_RUNNING
 
 # --- ユーザーが変更可能なカスタマイズ用変数 ---
+SUBMISSION_UPDATE_EXISTING_USER: bool = (
+   False  # 投稿時に既存ユーザーがいた場合にスコアを更新するか (True: 更新, False: 新しい行として追加)
+)
 DATA_DIR = (
     "competition_files/data"  # データ（学習・テスト・サンプル提出）のディレクトリ名
 )
@@ -102,8 +105,8 @@ def write_submission(submission_data: Dict) -> None:
     # DataFrameに変換しやすいように、すべての値をリストにする
     new_df = pd.DataFrame([submission_data])
 
-    # 既存のユーザーがいるか確認
-    if username in df["username"].values:
+    # 既存ユーザーがいて、かつ更新設定が有効な場合
+    if SUBMISSION_UPDATE_EXISTING_USER and username in df["username"].values:
         # 既存の行を更新
         update_cols = [col for col in submission_data.keys() if col != "username"]
         for col in update_cols:
