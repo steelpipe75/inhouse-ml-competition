@@ -16,7 +16,7 @@ from utils import page_config, check_password
 page_config()
 
 # 認証チェック
-check_password()
+check_password(always_protect=True)
 
 
 def render_additional_inputs() -> Dict:
