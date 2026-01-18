@@ -13,6 +13,8 @@ from config import (
     LEADERBOARD_WORKSHEET_NAME,
     GROUND_TRUTH_WORKSHEET_NAME,
     PROTECT_ALL_PAGES,
+    PAGE_TITLE,
+    PAGE_ICON,
 )
 
 # スコープ（権限）の設定
@@ -107,6 +109,8 @@ def write_submission_core(worksheet: Worksheet, df: pd.DataFrame) -> None:
 
 def page_config() -> None:
     st.set_page_config(
+        page_title=PAGE_TITLE,
+        page_icon=PAGE_ICON,
         layout="wide",
         initial_sidebar_state="expanded",
     )
@@ -146,7 +150,7 @@ def check_password(always_protect: bool = False) -> None:
         return
 
     # --- 以下、未認証の場合の処理 ---
-    st.title("内輪向け機械学習コンペアプリ")
+    st.title(PAGE_TITLE)
     st.subheader("合言葉を入力してください")
     password = st.text_input("合言葉", type="password", key="password_input")
 
