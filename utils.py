@@ -12,6 +12,7 @@ from config import (
     SPREADSHEET_NAME,
     LEADERBOARD_WORKSHEET_NAME,
     GROUND_TRUTH_WORKSHEET_NAME,
+    PROTECT_ALL_PAGES,
 )
 
 # スコープ（権限）の設定
@@ -111,12 +112,20 @@ def page_config() -> None:
     )
 
 
-def check_password() -> None:
+def check_password(always_protect: bool = False) -> None:
     """
     合言葉をチェックし、認証されていなければパスワード入力を表示し、
     プログラムの実行を停止する。
     認証済みの場合は何もしない。
+    `always_protect` が True のページ、または `config.py` の `PROTECT_ALL_PAGES` が
+    True の場合に認証が実行される。
     """
+    # このページが保護対象かどうかを判断
+    if not PROTECT_ALL_PAGES and not always_protect:
+        return  # 保護対象外なので何もしない
+
+    # --- 以下、保護対象ページの場合のロジック ---
+
     # st.session_stateに"authenticated"がない場合はFalseをセット
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
@@ -155,3 +164,4 @@ def check_password() -> None:
 
     # 認証が完了するまで、これ以降のコードは実行させない
     st.stop()
+
