@@ -114,6 +114,11 @@ def page_config() -> None:
         layout="wide",
         initial_sidebar_state="expanded",
     )
+    st.logo(
+        image="./logo.png",
+        size="large",
+        icon_image="./icon.png",
+    )
 
 
 def check_password(always_protect: bool = False) -> None:
