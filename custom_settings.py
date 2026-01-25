@@ -130,4 +130,17 @@ def filter_leaderboard(leaderboard_df: pd.DataFrame) -> pd.DataFrame:
         df = leaderboard_df.drop("private_score", axis=1)
     else:
         df = leaderboard_df
+
+    df = df.copy()
+
+    if "submission_time" in df.columns:
+        # submission_timeをdatetimeオブジェクトに変換
+        # タイムゾーン情報がない場合はUTCとして解釈
+        df["submission_time"] = pd.to_datetime(
+            df["submission_time"], errors="coerce", utc=True
+        )
+
+        # 日本時間 (Asia/Tokyo) に変換
+        df["submission_time"] = df["submission_time"].dt.tz_convert("Asia/Tokyo")
+
     return df
