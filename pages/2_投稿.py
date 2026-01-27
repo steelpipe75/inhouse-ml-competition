@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import datetime
+import hashlib
 from typing import Dict
 
 from custom_settings import (
@@ -10,7 +11,11 @@ from custom_settings import (
     read_ground_truth,
     write_submission,
 )
-from config import IS_COMPETITION_RUNNING
+from config import (
+    IS_COMPETITION_RUNNING,
+    AUTH,
+    EMAIL_HASH_SALT,
+)
 from utils import page_config, check_password
 
 page_config()
@@ -49,25 +54,37 @@ def show_submission() -> None:
     uploaded_file = st.file_uploader("予測CSVをアップロード", type="csv")
 
     if st.button("投稿する"):
+        if AUTH:
+            email = st.user.email
+        else:
+            email = "None"
         if not username:
             st.error("ユーザー名を入力してください。")
+        elif not email:
+            st.error("ログインしていません。ログインしてください。")
         elif not uploaded_file:
             st.error("CSVファイルをアップロードしてください。")
         else:
-            try:
-                submission_df = pd.read_csv(uploaded_file)
-                sample_df = pd.read_csv(SAMPLE_SUBMISSION_FILE)
-                ground_truth_df = read_ground_truth()
+            with st.spinner("投稿を処理中..."):
+                try:
+                    submission_df = pd.read_csv(uploaded_file)
+                    sample_df = pd.read_csv(SAMPLE_SUBMISSION_FILE)
+                    ground_truth_df = read_ground_truth()
 
-                if list(submission_df.columns) != list(sample_df.columns):
-                    st.error("カラムが期待する形と一致していません。")
-                elif len(submission_df) != len(sample_df):
-                    st.error("行数が期待する形と一致していません。")
-                else:
-                    with st.spinner("投稿を処理中..."):
+                    if list(submission_df.columns) != list(sample_df.columns):
+                        st.error("カラムが期待する形と一致していません。")
+                    elif len(submission_df) != len(sample_df):
+                        st.error("行数が期待する形と一致していません。")
+                    else:
                         public_score, private_score = score_submission(
                             submission_df, ground_truth_df
                         )
+
+                        # emailをハッシュ化 (saltを使用)
+                        if AUTH:
+                            email_hash = hashlib.sha256((email + EMAIL_HASH_SALT).encode()).hexdigest()
+                        else:
+                            email_hash = ""
 
                         # 投稿データを作成
                         submission_data = {
@@ -79,6 +96,8 @@ def show_submission() -> None:
                             ),
                         }
                         submission_data.update(additional_inputs)
+                        if AUTH:
+                            submission_data.update({"email_hash": email_hash})
 
                         # データを書き込み
                         write_submission(submission_data)
@@ -89,8 +108,8 @@ def show_submission() -> None:
                             st.success(
                                 f"投稿完了！Publicスコア: {public_score:.4f} / Privateスコア: {private_score:.4f}"
                             )
-            except Exception as e:
-                st.error(f"スコア計算または投稿処理中にエラーが発生しました: {e}")
+                except Exception as e:
+                    st.error(f"スコア計算または投稿処理中にエラーが発生しました: {e}")
 
 
 show_submission()
