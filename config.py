@@ -1,3 +1,5 @@
+import streamlit as st
+
 # --- Google Sheets Settings ---
 SPREADSHEET_NAME = "sample_spreadsheets"  # ここにスプレッドシート名を入力してください
 LEADERBOARD_WORKSHEET_NAME = "leaderboard"  # リーダーボード用のワークシート名
@@ -18,3 +20,17 @@ PROTECT_ALL_PAGES = False  # Trueの場合、すべてのページを保護し�
 PAGE_TITLE = "内輪向け機械学習コンペアプリ"
 PAGE_ICON = "🏆"
 
+# --- Auth ---
+try:
+    AUTH = st.secrets["AUTH"]
+except (KeyError, FileNotFoundError):
+    AUTH = False
+
+# --- Email Hash Salt ---
+if AUTH:
+    try:
+        EMAIL_HASH_SALT: str = st.secrets["EMAIL_HASH_SALT"]
+    except KeyError:
+        raise RuntimeError("st.secrets に 'EMAIL_HASH_SALT' が設定されていません。ハッシュ化にはsaltが必要です。")
+else:
+    EMAIL_HASH_SALT = ""
