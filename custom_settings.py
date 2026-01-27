@@ -14,7 +14,7 @@ from config import IS_COMPETITION_RUNNING
 
 # --- ユーザーが変更可能なカスタマイズ用変数 ---
 SUBMISSION_UPDATE_EXISTING_USER: bool = (
-   False  # 投稿時に既存ユーザーがいた場合にスコアを更新するか (True: 更新, False: 新しい行として追加)
+    False  # 投稿時に既存ユーザーがいた場合にスコアを更新するか (True: 更新, False: 新しい行として追加)
 )
 DATA_DIR = (
     "competition_files/data"  # データ（学習・テスト・サンプル提出）のディレクトリ名
@@ -27,6 +27,21 @@ HOME_CONTENT_FILE = "competition_files/content/home.md"  # Homeページのカ�
 LEADERBOARD_SORT_ASCENDING: bool = (
     True  # リーダーボードのスコアソート順（True:昇順, False:降順）
 )
+
+# --- Auth ---
+try:
+    AUTH = st.secrets["AUTH"]
+except (KeyError, FileNotFoundError):
+    AUTH = False
+
+# --- Email Hash Salt ---
+if AUTH:
+    try:
+        EMAIL_HASH_SALT: str = st.secrets["EMAIL_HASH_SALT"]
+    except KeyError:
+        raise RuntimeError("st.secrets に 'EMAIL_HASH_SALT' が設定されていません。ハッシュ化にはsaltが必要です。")
+else:
+    EMAIL_HASH_SALT = ""
 
 # --- Googleスプレッドシート関連のヘッダー定義 ---
 # 投稿時の追加情報定義
@@ -42,6 +57,7 @@ SUBMISSION_ADDITIONAL_INFO: List[Dict] = [
 _additional_columns: List[str] = [info["id"] for info in SUBMISSION_ADDITIONAL_INFO]
 LEADERBOARD_HEADER: List[str] = [
     "username",
+    "email_hash",
     "public_score",
     "private_score",
     "submission_time",
@@ -105,18 +121,33 @@ def write_submission(submission_data: Dict) -> None:
     # DataFrameに変換しやすいように、すべての値をリストにする
     new_df = pd.DataFrame([submission_data])
 
-    # 既存ユーザーがいて、かつ更新設定が有効な場合
-    if SUBMISSION_UPDATE_EXISTING_USER and username in df["username"].values:
-        # 既存の行を更新
-        update_cols = [col for col in submission_data.keys() if col != "username"]
-        for col in update_cols:
-            df.loc[df["username"] == username, col] = submission_data[col]
-    else:
-        # 新しい行を追加
-        if df.empty:
-            df = new_df
+    if AUTH:
+        email_hash = submission_data.get("email_hash")
+        # 同一email_hashユーザーがいて、かつ更新設定が有効な場合
+        if SUBMISSION_UPDATE_EXISTING_USER and email_hash in df["email_hash"].values:
+            # 既存の行を更新
+            update_cols = [col for col in submission_data.keys() if col != "email_hash"]
+            for col in update_cols:
+                df.loc[df["email_hash"] == email_hash, col] = submission_data[col]
         else:
-            df = pd.concat([df, new_df], ignore_index=True)
+            # 新しい行を追加
+            if df.empty:
+                df = new_df
+            else:
+                df = pd.concat([df, new_df], ignore_index=True)
+    else:
+        # 既存ユーザーがいて、かつ更新設定が有効な場合
+        if SUBMISSION_UPDATE_EXISTING_USER and username in df["username"].values:
+            # 既存の行を更新
+            update_cols = [col for col in submission_data.keys() if col != "username"]
+            for col in update_cols:
+                df.loc[df["username"] == username, col] = submission_data[col]
+        else:
+            # 新しい行を追加
+            if df.empty:
+                df = new_df
+            else:
+                df = pd.concat([df, new_df], ignore_index=True)
 
     # ヘッダー順にカラムを並び替え
     df = df.reindex(columns=LEADERBOARD_HEADER)
@@ -126,12 +157,7 @@ def write_submission(submission_data: Dict) -> None:
 
 # --- リーダーボードを表示するときのフィルタ ---
 def filter_leaderboard(leaderboard_df: pd.DataFrame) -> pd.DataFrame:
-    if IS_COMPETITION_RUNNING:
-        df = leaderboard_df.drop("private_score", axis=1)
-    else:
-        df = leaderboard_df
-
-    df = df.copy()
+    df = leaderboard_df.copy()
 
     if "submission_time" in df.columns:
         # submission_timeをdatetimeオブジェクトに変換
