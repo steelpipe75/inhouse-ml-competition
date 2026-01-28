@@ -66,7 +66,7 @@ def show_leaderboard() -> None:
                     title="スコア分布",
                     labels={"score": "Score", "count": "人数"},
                 )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
 
         else:
             st.info("まだ投稿がありません。")
