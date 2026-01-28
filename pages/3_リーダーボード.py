@@ -25,14 +25,22 @@ def show_leaderboard() -> None:
             if IS_COMPETITION_RUNNING:
                 leaderboard = leaderboard.drop("private_score", axis=1)
                 leaderboard = leaderboard.sort_values(
-                    "public_score", ascending=LEADERBOARD_SORT_ASCENDING
+                    by=["public_score", "submission_time"],
+                    ascending=[LEADERBOARD_SORT_ASCENDING, True],
                 )
+                rank_col_name = "暫定順位"
             else:
                 leaderboard = leaderboard.sort_values(
-                    "private_score", ascending=LEADERBOARD_SORT_ASCENDING
+                    by=["private_score", "submission_time"],
+                    ascending=[LEADERBOARD_SORT_ASCENDING, True],
                 )
+                rank_col_name = "順位"
+            leaderboard = leaderboard.reset_index(drop=True)
+            leaderboard.index += 1
+            leaderboard.insert(0, rank_col_name, leaderboard.index)
+
             df = filter_leaderboard(leaderboard)
-            st.dataframe(df)
+            st.dataframe(df, hide_index=True)
         else:
             st.info("まだ投稿がありません。")
 
