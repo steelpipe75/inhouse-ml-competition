@@ -7,3 +7,4 @@ streamlit-screen-stats
 streamlit-browser-session-storage
 streamlit-local-storage
 Authlib
+plotly
