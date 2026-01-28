@@ -3,6 +3,7 @@ import pandas as pd
 import datetime
 import hashlib
 from typing import Dict
+from zoneinfo import ZoneInfo
 
 from custom_settings import (
     SAMPLE_SUBMISSION_FILE,
@@ -17,6 +18,8 @@ from config import (
     EMAIL_HASH_SALT,
 )
 from utils import page_config, check_password
+
+JST = ZoneInfo("Asia/Tokyo")
 
 page_config()
 
@@ -91,8 +94,8 @@ def show_submission() -> None:
                             "username": username,
                             "public_score": public_score,
                             "private_score": private_score,
-                            "submission_time": datetime.datetime.now().strftime(
-                                "%Y-%m-%d %H:%M:%S"
+                            "submission_time": datetime.datetime.now(JST).strftime(
+                                "%Y-%m-%d %H:%M:%S%z"
                             ),
                         }
                         submission_data.update(additional_inputs)
