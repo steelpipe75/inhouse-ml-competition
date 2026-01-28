@@ -1,0 +1,17 @@
+[project]
+name = "small-fix-inhouse-ml-competition"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "authlib>=1.6.6",
+    "google-auth-oauthlib>=1.2.4",
+    "gspread>=6.2.1",
+    "gspread-dataframe>=4.0.0",
+    "numpy>=2.4.1",
+    "streamlit>=1.53.1",
+    "streamlit-browser-session-storage>=0.0.12",
+    "streamlit-local-storage>=0.0.25",
+    "streamlit-screen-stats>=0.0.82",
+]
