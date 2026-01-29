@@ -3,6 +3,8 @@ import plotly.express as px
 
 from custom_settings import (
     LEADERBOARD_SORT_ASCENDING,
+    SUBMISSION_UPDATE_EXISTING_USER,
+    AUTH,
     read_leaderboard,
     filter_leaderboard,
 )
@@ -22,6 +24,18 @@ def show_leaderboard() -> None:
     with st.spinner("読み込み中..."):
         leaderboard = read_leaderboard()
         if not leaderboard.empty:
+            # 同一ユーザーの最新投稿のみ表示する場合
+            if SUBMISSION_UPDATE_EXISTING_USER:
+                user_col = "email_hash" if AUTH else "username"
+                if (
+                    user_col in leaderboard.columns
+                    and "submission_time" in leaderboard.columns
+                ):
+                    # submission_timeが新しい順にソートし、ユーザーごとに最初の行（最新の投稿）を残す
+                    leaderboard = leaderboard.sort_values(
+                        "submission_time", ascending=False
+                    ).drop_duplicates(subset=[user_col], keep="first")
+
             leaderboard_display = leaderboard.drop("email_hash", axis=1)
             if IS_COMPETITION_RUNNING:
                 leaderboard_display = leaderboard_display.drop("private_score", axis=1)
