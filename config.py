@@ -10,7 +10,7 @@ PLAYGROUND_PAGE_URL = "https://steelpipe75.github.io/inhouse-ml-competition-play
 
 # --- Competition Settings ---
 IS_COMPETITION_RUNNING = (
-    True  # コンペ開催中かどうかのフラグ（True:開催中, False:終了後）
+    False  # コンペ開催中かどうかのフラグ（True:開催中, False:終了後）
 )
 
 # --- Password Protection Settings ---

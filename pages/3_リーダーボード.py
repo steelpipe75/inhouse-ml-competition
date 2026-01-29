@@ -23,55 +23,73 @@ def show_leaderboard() -> None:
     st.title("リーダーボード")
     with st.spinner("読み込み中..."):
         leaderboard = read_leaderboard()
-        if not leaderboard.empty:
-            # 同一ユーザーの最新投稿のみ表示する場合
-            if SUBMISSION_UPDATE_EXISTING_USER:
-                user_col = "email_hash" if AUTH else "username"
-                if (
-                    user_col in leaderboard.columns
-                    and "submission_time" in leaderboard.columns
-                ):
-                    # submission_timeが新しい順にソートし、ユーザーごとに最初の行（最新の投稿）を残す
-                    leaderboard = leaderboard.sort_values(
-                        "submission_time", ascending=False
-                    ).drop_duplicates(subset=[user_col], keep="first")
+        if leaderboard.empty:
+            st.info("まだ投稿がありません。")
+            return
 
-            leaderboard_display = leaderboard.drop("email_hash", axis=1)
+        # 同一ユーザーの最新投稿のみ表示する場合
+        if SUBMISSION_UPDATE_EXISTING_USER:
+            user_col = "email_hash" if AUTH else "username"
+            if (
+                user_col in leaderboard.columns
+                and "submission_time" in leaderboard.columns
+            ):
+                # submission_timeが新しい順にソートし、ユーザーごとに最初の行（最新の投稿）を残す
+                leaderboard = leaderboard.sort_values(
+                    "submission_time", ascending=False
+                ).drop_duplicates(subset=[user_col], keep="first")
+
+        public_tab, private_tab = st.tabs(["Public", "Private"])
+
+        with public_tab:
+            st.header("Public Leaderboard")
+            # Publicスコアでのリーダーボード（コンペ中・終了後にかかわらず表示）
+            df_public = leaderboard.drop("email_hash", axis=1, errors="ignore")
+            if "private_score" in df_public.columns:
+                df_public = df_public.drop("private_score", axis=1)
+
+            df_public = df_public.sort_values(
+                by=["public_score", "submission_time"],
+                ascending=[LEADERBOARD_SORT_ASCENDING, True],
+            )
+            df_public = df_public.reset_index(drop=True)
+            df_public.index += 1
+            df_public.insert(0, "暫定順位", df_public.index)
+
+            st.dataframe(filter_leaderboard(df_public), hide_index=True)
+
+            st.subheader("スコア分布")
+            fig_public = px.histogram(
+                df_public,
+                x="public_score",
+                nbins=20,
+                title="Public Score の分布",
+                labels={"public_score": "Public Score", "count": "人数"},
+            )
+            st.plotly_chart(fig_public, width="stretch")
+
+        with private_tab:
             if IS_COMPETITION_RUNNING:
-                leaderboard_display = leaderboard_display.drop("private_score", axis=1)
-                leaderboard_display = leaderboard_display.sort_values(
-                    by=["public_score", "submission_time"],
-                    ascending=[LEADERBOARD_SORT_ASCENDING, True],
-                )
-                rank_col_name = "暫定順位"
+                st.info("Privateリーダーボードは、コンペティション終了後に公開されます。")
             else:
-                leaderboard_display = leaderboard_display.sort_values(
+                st.header("Private Leaderboard")
+                # Privateスコアでのリーダーボード
+                df_private = leaderboard.drop("email_hash", axis=1, errors="ignore")
+                df_private = df_private.sort_values(
                     by=["private_score", "submission_time"],
                     ascending=[LEADERBOARD_SORT_ASCENDING, True],
                 )
-                rank_col_name = "順位"
-            leaderboard_display = leaderboard_display.reset_index(drop=True)
-            leaderboard_display.index += 1
-            leaderboard_display.insert(0, rank_col_name, leaderboard_display.index)
+                df_private = df_private.reset_index(drop=True)
+                df_private.index += 1
+                df_private.insert(0, "順位", df_private.index)
 
-            df = filter_leaderboard(leaderboard_display)
-            st.dataframe(df, hide_index=True)
+                st.dataframe(filter_leaderboard(df_private), hide_index=True)
 
-            st.subheader("スコア分布")
-
-            if IS_COMPETITION_RUNNING:
-                fig = px.histogram(
-                    leaderboard_display,
-                    x="public_score",
-                    nbins=20,
-                    title="Public Score の分布",
-                    labels={"public_score": "Public Score", "count": "人数"},
-                )
-            else:
-                score_df = leaderboard_display[["public_score", "private_score"]].melt(
+                st.subheader("スコア分布")
+                score_df = df_private[["public_score", "private_score"]].melt(
                     var_name="score_type", value_name="score"
                 )
-                fig = px.histogram(
+                fig_private = px.histogram(
                     score_df,
                     x="score",
                     color="score_type",
@@ -80,10 +98,7 @@ def show_leaderboard() -> None:
                     title="スコア分布",
                     labels={"score": "Score", "count": "人数"},
                 )
-            st.plotly_chart(fig, width='stretch')
-
-        else:
-            st.info("まだ投稿がありません。")
+                st.plotly_chart(fig_private, width="stretch")
 
 
 show_leaderboard()
