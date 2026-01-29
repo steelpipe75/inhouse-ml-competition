@@ -144,15 +144,6 @@ def filter_leaderboard(leaderboard_df: pd.DataFrame) -> pd.DataFrame:
             df["submission_time"], errors="coerce", utc=True
         )
 
-        # 同一ユーザーの最新投稿のみ表示する場合
-        if SUBMISSION_UPDATE_EXISTING_USER:
-            user_col = "email_hash" if AUTH else "username"
-            if user_col in df.columns:
-                # submission_timeが新しい順にソートし、ユーザーごとに最初の行（最新の投稿）を残す
-                df = df.sort_values(
-                    "submission_time", ascending=False
-                ).drop_duplicates(subset=[user_col], keep="first")
-
         # 日本時間 (Asia/Tokyo) に変換
         df["submission_time"] = df["submission_time"].dt.tz_convert("Asia/Tokyo")
 
