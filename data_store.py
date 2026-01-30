@@ -13,6 +13,7 @@ import streamlit as st
 from gspread.worksheet import Worksheet
 import sqlalchemy
 from sqlalchemy.exc import SQLAlchemyError
+import os
 
 
 # スコープ（権限）の設定
@@ -235,8 +236,34 @@ class BaseDBDataStore(DataStore):
 
 class SQLiteDataStore(BaseDBDataStore):
     """SQLiteをデータストアとして使用するクラス。"""
-    def __init__(self, db_path: str, leaderboard_table_name: str, ground_truth_table_name: str):
+
+    def __init__(
+        self,
+        db_path: str,
+        leaderboard_table_name: str,
+        ground_truth_table_name: str,
+    ):
+        # データベースファイルのためのディレクトリが存在しない場合は作成
+        db_dir = os.path.dirname(db_path)
+        if db_dir:
+            os.makedirs(db_dir, exist_ok=True)
+
+        # データベースファイルが実際に存在するかチェック
+        db_file_exists = os.path.exists(db_path)
+
         engine = sqlalchemy.create_engine(f"sqlite:///{db_path}")
+
+        # データベースファイルが存在しなかった場合、メッセージを表示
+        if not db_file_exists:
+            st.error(f"データベースファイルが存在しなかったため、新しいファイルを作成しました: `{db_path}`")
+            st.info(
+                "正解データが登録されていません。`ground_truth` を登録してください。\n\n"
+                "登録するには、プロジェクトのルートディレクトリで以下のコマンドを実行してください：\n\n"
+                "```\n"
+                "poetry run python scripts/register_ground_truth.py\n"
+                "```"
+            )
+
         super().__init__(engine, leaderboard_table_name, ground_truth_table_name)
 
 
