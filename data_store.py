@@ -15,6 +15,8 @@ import sqlalchemy
 from sqlalchemy.exc import SQLAlchemyError
 import os
 
+from utils import show_register_ground_truth_message
+
 
 # スコープ（権限）の設定
 SCOPES: List[str] = [
@@ -45,6 +47,11 @@ class DataStore(ABC):
         user_col: str,
     ):
         """投稿データを書き込む。"""
+        pass
+
+    @abstractmethod
+    def has_ground_truth(self) -> bool:
+        """正解データが登録されているかを確認する。"""
         pass
 
 
@@ -90,6 +97,18 @@ class GoogleSheetDataStore(DataStore):
             worksheet.update("A1", [header])
         return worksheet
 
+    def has_ground_truth(self) -> bool:
+        """正解データがスプレッドシートに1行以上存在するか確認する。"""
+        try:
+            spreadsheet = self.gc.open(self.spreadsheet_name)
+            worksheet = spreadsheet.worksheet(self.ground_truth_worksheet_name)
+            # ヘッダー行を除いて1行以上あればTrue
+            return worksheet.row_count > 1
+        except (gspread.SpreadsheetNotFound, gspread.WorksheetNotFound):
+            return False
+        except Exception:
+            return False
+
     def read_ground_truth(self, header: List[str]) -> pd.DataFrame:
         try:
             worksheet = self._get_worksheet(
@@ -130,7 +149,7 @@ class GoogleSheetDataStore(DataStore):
                 # 文字列に変換して比較
                 current_df[user_col] = current_df[user_col].astype(str)
                 user_identifier = str(user_identifier)
-                
+
                 existing_user_mask = current_df[user_col] == user_identifier
                 if existing_user_mask.any():
                     # 既存の行を更新
@@ -160,6 +179,20 @@ class BaseDBDataStore(DataStore):
         self.engine = engine
         self.leaderboard_table_name = leaderboard_table_name
         self.ground_truth_table_name = ground_truth_table_name
+
+    def has_ground_truth(self) -> bool:
+        """正解データがテーブルに1件以上存在するかを確認する。"""
+        inspector = sqlalchemy.inspect(self.engine)
+        if not inspector.has_table(self.ground_truth_table_name):
+            return False
+        try:
+            with self.engine.connect() as con:
+                # テーブルが存在する場合、行数を数える
+                count = con.execute(sqlalchemy.text(f"SELECT COUNT(1) FROM {self.ground_truth_table_name}")).scalar_one_or_none()
+                return (count or 0) > 0
+        except SQLAlchemyError:
+            # クエリ実行時エラー
+            return False
 
     def _create_table_if_not_exists(self, table_name: str, header: List[str], user_col: Optional[str] = None):
         inspector = sqlalchemy.inspect(self.engine)
@@ -204,13 +237,13 @@ class BaseDBDataStore(DataStore):
         user_col: str,
     ):
         self._create_table_if_not_exists(self.leaderboard_table_name, header, user_col)
-        
+
         user_identifier = submission_data.get(user_col)
 
         if update_existing and user_identifier:
             with self.engine.connect() as con:
                 tbl = sqlalchemy.Table(self.leaderboard_table_name, sqlalchemy.MetaData(), autoload_with=self.engine)
-                
+
                 # 既存レコードの確認
                 select_stmt = sqlalchemy.select(tbl).where(tbl.c[user_col] == user_identifier)
                 result = con.execute(select_stmt).fetchone()
@@ -255,14 +288,7 @@ class SQLiteDataStore(BaseDBDataStore):
 
         # データベースファイルが存在しなかった場合、メッセージを表示
         if not db_file_exists:
-            st.error(f"データベースファイルが存在しなかったため、新しいファイルを作成しました: `{db_path}`")
-            st.info(
-                "正解データが登録されていません。`ground_truth` を登録してください。\n\n"
-                "登録するには、プロジェクトのルートディレクトリで以下のコマンドを実行してください：\n\n"
-                "```\n"
-                "poetry run python scripts/register_ground_truth.py\n"
-                "```"
-            )
+            show_register_ground_truth_message(db_path=db_path)
 
         super().__init__(engine, leaderboard_table_name, ground_truth_table_name)
 

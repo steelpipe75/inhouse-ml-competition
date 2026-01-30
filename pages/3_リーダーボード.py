@@ -10,8 +10,10 @@ from custom_settings import (
 )
 from config import (
     IS_COMPETITION_RUNNING,
+    DATA_STORE_TYPE,
 )
-from utils import page_config, check_password
+from utils import page_config, check_password, show_register_ground_truth_message
+from data_store import get_data_store
 
 page_config()
 
@@ -21,6 +23,14 @@ check_password(always_protect=True)
 
 def show_leaderboard() -> None:
     st.title("リーダーボード")
+
+    # データストアのタイプがDBベースの場合、ground_truthの存在チェック
+    if DATA_STORE_TYPE != "google_sheet":
+        data_store = get_data_store()
+        if not data_store.has_ground_truth():
+            show_register_ground_truth_message()
+            st.stop()
+
     with st.spinner("読み込み中..."):
         leaderboard = read_leaderboard()
         if leaderboard.empty:

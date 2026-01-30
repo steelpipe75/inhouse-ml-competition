@@ -12,6 +12,23 @@ from config import (
 )
 
 
+def show_register_ground_truth_message(db_path: Optional[str] = None) -> None:
+    """
+    ground_truthの登録を促すメッセージを表示する。
+    db_pathが指定された場合、新規作成された旨も表示する。
+    """
+    if db_path:
+        st.error(f"データベースファイルが存在しなかったため、新しいファイルを作成しました: `{db_path}`")
+
+    st.info(
+        "正解データが登録されていません。`ground_truth` を登録してください。\n\n"
+        "登録するには、プロジェクトのルートディレクトリで以下のコマンドを実行してください：\n\n"
+        "```\n"
+        "poetry run python scripts/register_ground_truth.py\n"
+        "```"
+    )
+
+
 def page_config() -> None:
     st.set_page_config(
         page_title=PAGE_TITLE,
