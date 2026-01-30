@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 import hashlib
 import os
 
@@ -8,6 +9,8 @@ import os
 SALT = "gemini-cli-test-salt"
 OUTPUT_DIR = "dev_data"
 OUTPUT_FILE = os.path.join(OUTPUT_DIR, "test_leaderboard_data.csv")
+
+JST = ZoneInfo("Asia/Tokyo")
 
 def generate_hash(username: str) -> str:
     """ユーザー名から決定的なハッシュ値を生成する"""
@@ -37,7 +40,7 @@ users_data = {
 
 # --- データレコードを生成 ---
 data = []
-now = datetime.now(timezone.utc)
+now = datetime.now(JST)
 for username, submissions in users_data.items():
     for sub in submissions:
         data.append({
@@ -45,7 +48,7 @@ for username, submissions in users_data.items():
             "email_hash": generate_hash(username),
             "public_score": sub["public"],
             "private_score": sub["private"],
-            "submission_time": (now - timedelta(days=sub["days"], hours=sub["hours"])).isoformat(),
+            "submission_time": (now - timedelta(days=sub["days"], hours=sub["hours"])).strftime("%Y-%m-%d %H:%M:%S%z"),
             "comment": sub["comment"],
         })
 
