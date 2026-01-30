@@ -205,6 +205,12 @@ class BaseDBDataStore(DataStore):
     def _create_table_if_not_exists(
         self, table_name: str, header: List[str], user_col: Optional[str] = None
     ):
+        # ヘッダーに予約語 "id" が含まれていないかチェック（大文字小文字を区別しない）
+        if "id" in [h.lower() for h in header]:
+            raise ValueError(
+                "ヘッダーに 'id' という列名が含まれています。この名前はデータベースの自動採番主キーとして予約されているため使用できません。列名を変更してください。"
+            )
+
         inspector = sqlalchemy.inspect(self.engine)
         if not inspector.has_table(table_name):
             meta = sqlalchemy.MetaData()
