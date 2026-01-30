@@ -9,7 +9,7 @@ from config import AUTH
 
 # --- ユーザーが変更可能なカスタマイズ用変数 ---
 LEADERBOARD_SHOW_LATEST_ONLY: bool = (
-   True  # リーダーボードに各ユーザーの最新の投稿のみを表示するか (True: 最新のみ, False: 全ての投稿)
+    False  # リーダーボードに各ユーザーの最新の投稿のみを表示するか (True: 最新のみ, False: 全ての投稿)
 )
 DATA_DIR = (
     "competition_files/data"  # データ（学習・テスト・サンプル提出）のディレクトリ名
