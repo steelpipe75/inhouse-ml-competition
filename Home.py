@@ -13,7 +13,9 @@ def show_home_content():
     else:
         st.title("内輪向け機械学習コンペアプリ")
         st.write("サイドバーから、各ページに移動できます。")
-        st.error(f"Home表示内容カスタマイズ用ファイル（{HOME_CONTENT_FILE}）が見つかりません)")
+        st.error(
+            f"Home表示内容カスタマイズ用ファイル（{HOME_CONTENT_FILE}）が見つかりません)"
+        )
 
 
 def main() -> None:

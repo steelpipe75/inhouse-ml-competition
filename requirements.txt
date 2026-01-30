@@ -8,3 +8,7 @@ streamlit-browser-session-storage
 streamlit-local-storage
 Authlib
 plotly
+sqlalchemy
+mysql-connector-python
+psycopg2-binary
+openpyxl

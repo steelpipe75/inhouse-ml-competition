@@ -11,4 +11,6 @@ hashed_password = hashlib.sha256(password.encode()).hexdigest()
 print("\n---")
 print("生成されたSHA256ハッシュ値:")
 print(hashed_password)
-print("\n上記のハッシュ値をコピーして、.streamlit/secrets.toml ファイルの 'APP_PASSWORD_HASH' に設定してください。")
+print(
+    "\n上記のハッシュ値をコピーして、.streamlit/secrets.toml ファイルの 'APP_PASSWORD_HASH' に設定してください。"
+)

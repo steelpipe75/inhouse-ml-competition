@@ -20,7 +20,7 @@ def playground() -> None:
     components.iframe(
         src=PLAYGROUND_PAGE_URL,
         width=data["innerWidth"],
-        height=int(data["innerHeight"]*0.9),
+        height=int(data["innerHeight"] * 0.9),
     )
 
 
