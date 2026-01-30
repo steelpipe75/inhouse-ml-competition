@@ -207,23 +207,37 @@ class BaseDBDataStore(DataStore):
     ):
         inspector = sqlalchemy.inspect(self.engine)
         if not inspector.has_table(table_name):
-            empty_df = pd.DataFrame(columns=header)
-            # 主キー/ユニーク制約を考慮してテーブル作成
-            # user_colが指定されていればUNIQUE制約を追加（ただし、to_sqlでは直接指定できない）
-            # ここでは単純なテーブル作成にとどめる
-            empty_df.to_sql(table_name, self.engine, if_exists="fail", index=False)
+            meta = sqlalchemy.MetaData()
+
+            # id列を主キーとして定義（自動インクリメント）
+            columns = [
+                sqlalchemy.Column(
+                    "id", sqlalchemy.Integer, primary_key=True, autoincrement=True
+                )
+            ]
+            # headerの列を汎用的なText型として追加
+            columns.extend([sqlalchemy.Column(h, sqlalchemy.Text) for h in header])
+
+            # テーブル定義
+            sqlalchemy.Table(table_name, meta, *columns)
+
+            # テーブル作成
+            meta.create_all(self.engine)
+
             if user_col and table_name == self.leaderboard_table_name:
                 with self.engine.connect() as con:
-                    # PostgreSQLではUNIQUEインデックスの作成が一般的
-                    # SQLite, MySQLではALTER TABLEでUNIQUE制約を追加
-                    # 방언 (dialect) に応じた処理が必要だが、ここでは一般的なSQLを試す
                     try:
+                        # ALTER TABLE文はデータベース製品による方言の差が大きい
+                        # ここでは一般的なSQL標準に近い引用符を使った構文を試す
                         con.execute(
-                            f'ALTER TABLE "{table_name}" ADD UNIQUE ("{user_col}");'
+                            sqlalchemy.text(
+                                f'ALTER TABLE "{table_name}" ADD UNIQUE ("{user_col}")'
+                            )
                         )
+                        con.commit()
                     except SQLAlchemyError as e:
                         print(
-                            f"Could not add UNIQUE constraint on {user_col}: {e}. This might be expected if the DB does not support it or the constraint already exists."
+                            f"Could not add UNIQUE constraint on {user_col}: {e}. This might be expected if the DB dialect does not support this syntax."
                         )
 
     def read_ground_truth(self, header: List[str]) -> pd.DataFrame:
