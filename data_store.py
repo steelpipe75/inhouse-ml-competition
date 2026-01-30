@@ -203,10 +203,15 @@ class BaseDBDataStore(DataStore):
             return False
 
     def _create_table_if_not_exists(
-        self, table_name: str, header: List[str], user_col: Optional[str] = None
+        self,
+        table_name: str,
+        header: List[str],
+        user_col: Optional[str] = None,
+        is_ground_truth_table: bool = False,
     ):
         # ヘッダーに予約語 "id" が含まれていないかチェック（大文字小文字を区別しない）
-        if "id" in [h.lower() for h in header]:
+        # ground_truth_tableの場合を除外
+        if not is_ground_truth_table and "id" in [h.lower() for h in header]:
             raise ValueError(
                 "ヘッダーに 'id' という列名が含まれています。この名前はデータベースの自動採番主キーとして予約されているため使用できません。列名を変更してください。"
             )
@@ -247,7 +252,7 @@ class BaseDBDataStore(DataStore):
                         )
 
     def read_ground_truth(self, header: List[str]) -> pd.DataFrame:
-        self._create_table_if_not_exists(self.ground_truth_table_name, header)
+        self._create_table_if_not_exists(self.ground_truth_table_name, header, is_ground_truth_table=True)
         try:
             return pd.read_sql(self.ground_truth_table_name, self.engine)
         except Exception as e:
