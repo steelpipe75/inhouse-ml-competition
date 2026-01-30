@@ -34,3 +34,20 @@ if AUTH:
         raise RuntimeError("st.secrets に 'EMAIL_HASH_SALT' が設定されていません。ハッシュ化にはsaltが必要です。")
 else:
     EMAIL_HASH_SALT = ""
+
+
+# --- Data Store Settings ---
+# データストアの種類を選択: "google_sheet", "sqlite", "mysql", "postgresql"
+DATA_STORE_TYPE = "sqlite"
+
+# --- For SQLite ---
+DB_PATH = "db/competition.db"
+
+# --- For MySQL/PostgreSQL ---
+# 例: "mysql+mysqlconnector://user:password@host:port/database"
+# 例: "postgresql+psycopg2://user:password@host:port/database"
+DB_URL = ""
+
+# --- For Database Table Names ---
+LEADERBOARD_TABLE_NAME = "leaderboard"
+GROUND_TRUTH_TABLE_NAME = "ground_truth"
