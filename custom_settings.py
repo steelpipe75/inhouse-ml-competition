@@ -4,18 +4,11 @@ import pandas as pd
 import os
 import streamlit as st
 
-from utils import (
-    read_ground_truth_core,
-    read_leaderboard_core,
-    write_submission_preproc,
-    write_submission_core,
-)
-from config import IS_COMPETITION_RUNNING
+from data_store import get_data_store
+from config import AUTH
 
 # --- ユーザーが変更可能なカスタマイズ用変数 ---
-SUBMISSION_UPDATE_EXISTING_USER: bool = (
-    True  # 投稿時に既存ユーザーがいた場合にスコアを更新するか (True: 更新, False: 新しい行として追加)
-)
+LEADERBOARD_SHOW_LATEST_ONLY: bool = False  # リーダーボードに各ユーザーの最新の投稿のみを表示するか (True: 最新のみ, False: 全ての投稿)
 DATA_DIR = (
     "competition_files/data"  # データ（学習・テスト・サンプル提出）のディレクトリ名
 )
@@ -28,18 +21,14 @@ LEADERBOARD_SORT_ASCENDING: bool = (
     True  # リーダーボードのスコアソート順（True:昇順, False:降順）
 )
 
-# --- Auth ---
-try:
-    AUTH = st.secrets["AUTH"]
-except (KeyError, FileNotFoundError):
-    AUTH = False
-
 # --- Email Hash Salt ---
 if AUTH:
     try:
         EMAIL_HASH_SALT: str = st.secrets["EMAIL_HASH_SALT"]
     except KeyError:
-        raise RuntimeError("st.secrets に 'EMAIL_HASH_SALT' が設定されていません。ハッシュ化にはsaltが必要です。")
+        raise RuntimeError(
+            "st.secrets に 'EMAIL_HASH_SALT' が設定されていません。ハッシュ化にはsaltが必要です。"
+        )
 else:
     EMAIL_HASH_SALT = ""
 
@@ -89,7 +78,8 @@ def score_submission(pred_df: pd.DataFrame, gt_df: pd.DataFrame) -> Tuple[float,
 
 # --- 正解データの読み込み ---
 def read_ground_truth() -> pd.DataFrame:
-    df = read_ground_truth_core(GROUND_TRUTH_HEADER)
+    data_store = get_data_store()
+    df = data_store.read_ground_truth(GROUND_TRUTH_HEADER)
     # データ型の変換
     if "id" in df.columns:
         df["id"] = pd.to_numeric(df["id"], errors="coerce")
@@ -100,7 +90,8 @@ def read_ground_truth() -> pd.DataFrame:
 
 # --- リーダーボードの読み込み ---
 def read_leaderboard() -> pd.DataFrame:
-    df = read_leaderboard_core(LEADERBOARD_HEADER)
+    data_store = get_data_store()
+    df = data_store.read_leaderboard(LEADERBOARD_HEADER)
     # データ型の変換
     if "public_score" in df.columns:
         df["public_score"] = pd.to_numeric(df["public_score"], errors="coerce")
@@ -111,26 +102,14 @@ def read_leaderboard() -> pd.DataFrame:
 
 # --- リーダーボードに新しい投稿を書き込み ---
 def write_submission(submission_data: Dict) -> None:
-    worksheet, df = write_submission_preproc(LEADERBOARD_HEADER)
-
-    username = submission_data.get("username")
-    if not username:
-        st.error("投稿データにユーザー名が含まれていません。")
-        return
-
-    # DataFrameに変換しやすいように、すべての値をリストにする
-    new_df = pd.DataFrame([submission_data])
-
-    # 常に新しい行として追加
-    if df.empty:
-        df = new_df
-    else:
-        df = pd.concat([df, new_df], ignore_index=True)
-
-    # ヘッダー順にカラムを並び替え
-    df = df.reindex(columns=LEADERBOARD_HEADER)
-
-    write_submission_core(worksheet, df)
+    data_store = get_data_store()
+    user_col = "email_hash" if AUTH else "username"
+    data_store.write_submission(
+        submission_data,
+        LEADERBOARD_HEADER,
+        update_existing=False,  # 常に新しい行として追加
+        user_col=user_col,
+    )
 
 
 # --- リーダーボードを表示するときのフィルタ ---

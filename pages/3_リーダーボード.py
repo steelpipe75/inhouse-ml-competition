@@ -3,15 +3,17 @@ import plotly.express as px
 
 from custom_settings import (
     LEADERBOARD_SORT_ASCENDING,
-    SUBMISSION_UPDATE_EXISTING_USER,
+    LEADERBOARD_SHOW_LATEST_ONLY,
     AUTH,
     read_leaderboard,
     filter_leaderboard,
 )
 from config import (
     IS_COMPETITION_RUNNING,
+    DATA_STORE_TYPE,
 )
-from utils import page_config, check_password
+from utils import page_config, check_password, show_register_ground_truth_message
+from data_store import get_data_store
 
 page_config()
 
@@ -21,6 +23,14 @@ check_password(always_protect=True)
 
 def show_leaderboard() -> None:
     st.title("リーダーボード")
+
+    # データストアのタイプがDBベースの場合、ground_truthの存在チェック
+    if DATA_STORE_TYPE != "google_sheet":
+        data_store = get_data_store()
+        if not data_store.has_ground_truth():
+            show_register_ground_truth_message()
+            st.stop()
+
     with st.spinner("読み込み中..."):
         leaderboard = read_leaderboard()
         if leaderboard.empty:
@@ -28,7 +38,7 @@ def show_leaderboard() -> None:
             return
 
         # 同一ユーザーの最新投稿のみ表示する場合
-        if SUBMISSION_UPDATE_EXISTING_USER:
+        if LEADERBOARD_SHOW_LATEST_ONLY:
             user_col = "email_hash" if AUTH else "username"
             if (
                 user_col in leaderboard.columns
@@ -70,7 +80,9 @@ def show_leaderboard() -> None:
 
         with private_tab:
             if IS_COMPETITION_RUNNING:
-                st.info("Privateリーダーボードは、コンペティション終了後に公開されます。")
+                st.info(
+                    "Privateリーダーボードは、コンペティション終了後に公開されます。"
+                )
             else:
                 st.header("Private Leaderboard")
                 # Privateスコアでのリーダーボード

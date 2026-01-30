@@ -85,7 +85,9 @@ def show_submission() -> None:
 
                         # emailをハッシュ化 (saltを使用)
                         if AUTH:
-                            email_hash = hashlib.sha256((email + EMAIL_HASH_SALT).encode()).hexdigest()
+                            email_hash = hashlib.sha256(
+                                (email + EMAIL_HASH_SALT).encode()
+                            ).hexdigest()
                         else:
                             email_hash = ""
 
