@@ -288,7 +288,7 @@ class SQLiteDataStore(BaseDBDataStore):
 
         # データベースファイルが存在しなかった場合、メッセージを表示
         if not db_file_exists:
-            show_register_ground_truth_message(db_path=db_path)
+            st.error(f"データベースファイルが存在しなかったため、新しいファイルを作成しました: `{db_path}`")
 
         super().__init__(engine, leaderboard_table_name, ground_truth_table_name)
 

@@ -12,13 +12,11 @@ from config import (
 )
 
 
-def show_register_ground_truth_message(db_path: Optional[str] = None) -> None:
+def show_register_ground_truth_message() -> None:
     """
     ground_truthの登録を促すメッセージを表示する。
     db_pathが指定された場合、新規作成された旨も表示する。
     """
-    if db_path:
-        st.error(f"データベースファイルが存在しなかったため、新しいファイルを作成しました: `{db_path}`")
 
     st.info(
         "正解データが登録されていません。`ground_truth` を登録してください。\n\n"
