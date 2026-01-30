@@ -5,7 +5,7 @@ import os
 import streamlit as st
 
 from data_store import get_data_store
-from config import IS_COMPETITION_RUNNING, AUTH
+from config import AUTH
 
 # --- ユーザーが変更可能なカスタマイズ用変数 ---
 LEADERBOARD_SHOW_LATEST_ONLY: bool = (

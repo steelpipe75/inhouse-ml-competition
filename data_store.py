@@ -15,8 +15,6 @@ import sqlalchemy
 from sqlalchemy.exc import SQLAlchemyError
 import os
 
-from utils import show_register_ground_truth_message
-
 
 # スコープ（権限）の設定
 SCOPES: List[str] = [
