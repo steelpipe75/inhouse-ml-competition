@@ -80,7 +80,9 @@ def show_leaderboard() -> None:
 
         with private_tab:
             if IS_COMPETITION_RUNNING:
-                st.info("Privateリーダーボードは、コンペティション終了後に公開されます。")
+                st.info(
+                    "Privateリーダーボードは、コンペティション終了後に公開されます。"
+                )
             else:
                 st.header("Private Leaderboard")
                 # Privateスコアでのリーダーボード

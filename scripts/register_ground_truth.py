@@ -1,4 +1,3 @@
-
 import pandas as pd
 import sqlite3
 import sys
@@ -22,15 +21,17 @@ def register_ground_truth_from_excel():
     Excelファイルから ground_truth データを読み込み、SQLiteデータベースに登録します。
     """
     db_path = project_root / config.DB_PATH
-    
+
     # データベースファイルの親ディレクトリが存在しない場合は作成
     db_path.parent.mkdir(parents=True, exist_ok=True)
-    
+
     table_name = config.GROUND_TRUTH_TABLE_NAME
     excel_path = project_root / "competition_files" / "sample_spreadsheets.xlsx"
     sheet_name = "ground_truth"
 
-    print(f"Excelファイル '{excel_path}' から '{sheet_name}' シートを読み込んでいます...")
+    print(
+        f"Excelファイル '{excel_path}' から '{sheet_name}' シートを読み込んでいます..."
+    )
 
     try:
         df = pd.read_excel(excel_path, sheet_name=sheet_name)
@@ -38,7 +39,11 @@ def register_ground_truth_from_excel():
         print(f"エラー: Excelファイルが見つかりません: {excel_path}")
         return
     except Exception as e:
-        if isinstance(e, ValueError) and "Worksheet" in str(e) and "not found" in str(e):
+        if (
+            isinstance(e, ValueError)
+            and "Worksheet" in str(e)
+            and "not found" in str(e)
+        ):
             print(f"エラー: Excelファイルに '{sheet_name}' シートが見つかりません。")
         else:
             print(f"Excelファイルの読み込み中にエラーが発生しました: {e}")

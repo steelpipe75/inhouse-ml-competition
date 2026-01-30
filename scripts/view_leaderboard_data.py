@@ -39,13 +39,17 @@ def view_leaderboard_data():
         else:
             print("\n--- リーダーボードデータ ---")
             # デフォルトの表示制限を解除して、全ての行と列を表示
-            with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            with pd.option_context(
+                "display.max_rows", None, "display.max_columns", None
+            ):
                 print(df.to_string(index=False))
             print(f"\n合計 {len(df)} 件のデータ。")
 
     except pd.io.sql.DatabaseError as e:
         print(f"データベースの読み込み中にエラーが発生しました: {e}")
-        print(f"'{table_name}' テーブルが存在しないか、データ形式に問題がある可能性があります。")
+        print(
+            f"'{table_name}' テーブルが存在しないか、データ形式に問題がある可能性があります。"
+        )
     except sqlite3.Error as e:
         print(f"データベース接続中にエラーが発生しました: {e}")
 

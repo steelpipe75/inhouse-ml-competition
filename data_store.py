@@ -3,6 +3,7 @@
 設定に応じて、Googleスプレッドシート、SQLite、MySQL、PostgreSQLなどの
 異なるデータソースへのアクセスを切り替えます。
 """
+
 from abc import ABC, abstractmethod
 from typing import Dict, List, Any, Optional
 import pandas as pd
@@ -161,7 +162,7 @@ class GoogleSheetDataStore(DataStore):
                     # 存在しない場合は追加
                     updated_df = pd.concat([current_df, new_row_df], ignore_index=True)
             else:
-                 # user_identifierがない場合は単純に追加
+                # user_identifierがない場合は単純に追加
                 updated_df = pd.concat([current_df, new_row_df], ignore_index=True)
         else:
             # 更新しないか、データが空の場合は単純に追加
@@ -173,7 +174,12 @@ class GoogleSheetDataStore(DataStore):
 class BaseDBDataStore(DataStore):
     """SQLiteやRDBなど、SQLAlchemyを使用するデータベースの共通基底クラス。"""
 
-    def __init__(self, engine: sqlalchemy.engine.Engine, leaderboard_table_name: str, ground_truth_table_name: str):
+    def __init__(
+        self,
+        engine: sqlalchemy.engine.Engine,
+        leaderboard_table_name: str,
+        ground_truth_table_name: str,
+    ):
         self.engine = engine
         self.leaderboard_table_name = leaderboard_table_name
         self.ground_truth_table_name = ground_truth_table_name
@@ -186,30 +192,39 @@ class BaseDBDataStore(DataStore):
         try:
             with self.engine.connect() as con:
                 # テーブルが存在する場合、行数を数える
-                count = con.execute(sqlalchemy.text(f"SELECT COUNT(1) FROM {self.ground_truth_table_name}")).scalar_one_or_none()
+                count = con.execute(
+                    sqlalchemy.text(
+                        f"SELECT COUNT(1) FROM {self.ground_truth_table_name}"
+                    )
+                ).scalar_one_or_none()
                 return (count or 0) > 0
         except SQLAlchemyError:
             # クエリ実行時エラー
             return False
 
-    def _create_table_if_not_exists(self, table_name: str, header: List[str], user_col: Optional[str] = None):
+    def _create_table_if_not_exists(
+        self, table_name: str, header: List[str], user_col: Optional[str] = None
+    ):
         inspector = sqlalchemy.inspect(self.engine)
         if not inspector.has_table(table_name):
             empty_df = pd.DataFrame(columns=header)
             # 主キー/ユニーク制約を考慮してテーブル作成
             # user_colが指定されていればUNIQUE制約を追加（ただし、to_sqlでは直接指定できない）
             # ここでは単純なテーブル作成にとどめる
-            empty_df.to_sql(table_name, self.engine, if_exists='fail', index=False)
+            empty_df.to_sql(table_name, self.engine, if_exists="fail", index=False)
             if user_col and table_name == self.leaderboard_table_name:
-                 with self.engine.connect() as con:
+                with self.engine.connect() as con:
                     # PostgreSQLではUNIQUEインデックスの作成が一般的
                     # SQLite, MySQLではALTER TABLEでUNIQUE制約を追加
                     # 방언 (dialect) に応じた処理が必要だが、ここでは一般的なSQLを試す
                     try:
-                        con.execute(f'ALTER TABLE "{table_name}" ADD UNIQUE ("{user_col}");')
+                        con.execute(
+                            f'ALTER TABLE "{table_name}" ADD UNIQUE ("{user_col}");'
+                        )
                     except SQLAlchemyError as e:
-                        print(f"Could not add UNIQUE constraint on {user_col}: {e}. This might be expected if the DB does not support it or the constraint already exists.")
-
+                        print(
+                            f"Could not add UNIQUE constraint on {user_col}: {e}. This might be expected if the DB does not support it or the constraint already exists."
+                        )
 
     def read_ground_truth(self, header: List[str]) -> pd.DataFrame:
         self._create_table_if_not_exists(self.ground_truth_table_name, header)
@@ -220,7 +235,9 @@ class BaseDBDataStore(DataStore):
             return pd.DataFrame(columns=header)
 
     def read_leaderboard(self, header: List[str]) -> pd.DataFrame:
-        self._create_table_if_not_exists(self.leaderboard_table_name, header, user_col="username") # ToDo: user_colを固定しない
+        self._create_table_if_not_exists(
+            self.leaderboard_table_name, header, user_col="username"
+        )  # ToDo: user_colを固定しない
         try:
             return pd.read_sql(self.leaderboard_table_name, self.engine)
         except Exception as e:
@@ -240,10 +257,16 @@ class BaseDBDataStore(DataStore):
 
         if update_existing and user_identifier:
             with self.engine.connect() as con:
-                tbl = sqlalchemy.Table(self.leaderboard_table_name, sqlalchemy.MetaData(), autoload_with=self.engine)
+                tbl = sqlalchemy.Table(
+                    self.leaderboard_table_name,
+                    sqlalchemy.MetaData(),
+                    autoload_with=self.engine,
+                )
 
                 # 既存レコードの確認
-                select_stmt = sqlalchemy.select(tbl).where(tbl.c[user_col] == user_identifier)
+                select_stmt = sqlalchemy.select(tbl).where(
+                    tbl.c[user_col] == user_identifier
+                )
                 result = con.execute(select_stmt).fetchone()
 
                 if result:
@@ -262,7 +285,12 @@ class BaseDBDataStore(DataStore):
         else:
             # 単純挿入
             df = pd.DataFrame([submission_data], columns=header)
-            df.to_sql(self.leaderboard_table_name, self.engine, if_exists="append", index=False)
+            df.to_sql(
+                self.leaderboard_table_name,
+                self.engine,
+                if_exists="append",
+                index=False,
+            )
 
 
 class SQLiteDataStore(BaseDBDataStore):
@@ -286,14 +314,19 @@ class SQLiteDataStore(BaseDBDataStore):
 
         # データベースファイルが存在しなかった場合、メッセージを表示
         if not db_file_exists:
-            st.error(f"データベースファイルが存在しなかったため、新しいファイルを作成しました: `{db_path}`")
+            st.error(
+                f"データベースファイルが存在しなかったため、新しいファイルを作成しました: `{db_path}`"
+            )
 
         super().__init__(engine, leaderboard_table_name, ground_truth_table_name)
 
 
 class RDBDataStore(BaseDBDataStore):
     """MySQL/PostgreSQLなどのリレーショナルデータベースをデータストアとして使用するクラス。"""
-    def __init__(self, db_url: str, leaderboard_table_name: str, ground_truth_table_name: str):
+
+    def __init__(
+        self, db_url: str, leaderboard_table_name: str, ground_truth_table_name: str
+    ):
         engine = sqlalchemy.create_engine(db_url)
         super().__init__(engine, leaderboard_table_name, ground_truth_table_name)
 

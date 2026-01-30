@@ -8,9 +8,7 @@ from data_store import get_data_store
 from config import AUTH
 
 # --- ユーザーが変更可能なカスタマイズ用変数 ---
-LEADERBOARD_SHOW_LATEST_ONLY: bool = (
-    False  # リーダーボードに各ユーザーの最新の投稿のみを表示するか (True: 最新のみ, False: 全ての投稿)
-)
+LEADERBOARD_SHOW_LATEST_ONLY: bool = False  # リーダーボードに各ユーザーの最新の投稿のみを表示するか (True: 最新のみ, False: 全ての投稿)
 DATA_DIR = (
     "competition_files/data"  # データ（学習・テスト・サンプル提出）のディレクトリ名
 )
@@ -28,7 +26,9 @@ if AUTH:
     try:
         EMAIL_HASH_SALT: str = st.secrets["EMAIL_HASH_SALT"]
     except KeyError:
-        raise RuntimeError("st.secrets に 'EMAIL_HASH_SALT' が設定されていません。ハッシュ化にはsaltが必要です。")
+        raise RuntimeError(
+            "st.secrets に 'EMAIL_HASH_SALT' が設定されていません。ハッシュ化にはsaltが必要です。"
+        )
 else:
     EMAIL_HASH_SALT = ""
 

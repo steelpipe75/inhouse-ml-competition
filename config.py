@@ -6,7 +6,7 @@ LEADERBOARD_WORKSHEET_NAME = "leaderboard"  # リーダーボード用のワー�
 GROUND_TRUTH_WORKSHEET_NAME = "ground_truth"  # 正解データ用のワークシート名
 
 # --- Playground Page Settings ---
-PLAYGROUND_PAGE_URL = "https://steelpipe75.github.io/inhouse-ml-competition-playground-sample/" # PlaygroundページのURL
+PLAYGROUND_PAGE_URL = "https://steelpipe75.github.io/inhouse-ml-competition-playground-sample/"  # PlaygroundページのURL
 
 # --- Competition Settings ---
 IS_COMPETITION_RUNNING = (
@@ -31,7 +31,9 @@ if AUTH:
     try:
         EMAIL_HASH_SALT: str = st.secrets["EMAIL_HASH_SALT"]
     except KeyError:
-        raise RuntimeError("st.secrets に 'EMAIL_HASH_SALT' が設定されていません。ハッシュ化にはsaltが必要です。")
+        raise RuntimeError(
+            "st.secrets に 'EMAIL_HASH_SALT' が設定されていません。ハッシュ化にはsaltが必要です。"
+        )
 else:
     EMAIL_HASH_SALT = ""
 
