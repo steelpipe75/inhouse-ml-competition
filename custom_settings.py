@@ -8,8 +8,8 @@ from data_store import get_data_store
 from config import IS_COMPETITION_RUNNING, AUTH
 
 # --- ユーザーが変更可能なカスタマイズ用変数 ---
-SUBMISSION_UPDATE_EXISTING_USER: bool = (
-    True  # 投稿時に既存ユーザーがいた場合にスコアを更新するか (True: 更新, False: 新しい行として追加)
+LEADERBOARD_SHOW_LATEST_ONLY: bool = (
+   True  # リーダーボードに各ユーザーの最新の投稿のみを表示するか (True: 最新のみ, False: 全ての投稿)
 )
 DATA_DIR = (
     "competition_files/data"  # データ（学習・テスト・サンプル提出）のディレクトリ名
@@ -107,7 +107,7 @@ def write_submission(submission_data: Dict) -> None:
     data_store.write_submission(
         submission_data,
         LEADERBOARD_HEADER,
-        update_existing=SUBMISSION_UPDATE_EXISTING_USER,
+        update_existing=False,  # 常に新しい行として追加
         user_col=user_col,
     )
 

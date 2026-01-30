@@ -3,7 +3,7 @@ import plotly.express as px
 
 from custom_settings import (
     LEADERBOARD_SORT_ASCENDING,
-    SUBMISSION_UPDATE_EXISTING_USER,
+    LEADERBOARD_SHOW_LATEST_ONLY,
     AUTH,
     read_leaderboard,
     filter_leaderboard,
@@ -38,7 +38,7 @@ def show_leaderboard() -> None:
             return
 
         # 同一ユーザーの最新投稿のみ表示する場合
-        if SUBMISSION_UPDATE_EXISTING_USER:
+        if LEADERBOARD_SHOW_LATEST_ONLY:
             user_col = "email_hash" if AUTH else "username"
             if (
                 user_col in leaderboard.columns
