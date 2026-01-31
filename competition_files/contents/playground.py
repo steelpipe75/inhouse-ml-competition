@@ -2,8 +2,10 @@ import streamlit as st
 import streamlit.components.v1 as components
 from st_screen_stats import ScreenData
 
-from config import PLAYGROUND_PAGE_URL
 from utils import page_config, check_password
+
+# --- Playground Page Settings ---
+PLAYGROUND_PAGE_URL = "https://steelpipe75.github.io/inhouse-ml-competition-playground-sample/"  # PlaygroundページのURL
 
 page_config()
 
