@@ -33,7 +33,7 @@ def show_overview_and_data() -> None:
                         f"{filename} をダウンロード",
                         f,
                         file_name=filename,
-                        icon=":material/download:"
+                        icon=":material/download:",
                     )
     else:
         st.error("データフォルダが見つかりません。")

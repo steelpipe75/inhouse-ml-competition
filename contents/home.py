@@ -3,6 +3,13 @@ import os
 from custom_settings import HOME_CONTENT_FILE
 from utils import page_config, check_password
 
+page_config()
+
+st.title(":material/home: Home")
+
+# 認証チェック
+check_password()
+
 
 def show_home_content():
     """ホーム画面のコンテンツを表示する"""
@@ -18,13 +25,4 @@ def show_home_content():
         )
 
 
-def main() -> None:
-    """メイン関数"""
-    page_config()
-    st.title(":material/home: Home")
-    check_password()
-    show_home_content()
-
-
-if __name__ == "__main__":
-    main()
+show_home_content()
