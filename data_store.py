@@ -268,22 +268,28 @@ class SQLiteDataStore(BaseDBDataStore):
         # データベースファイルのためのディレクトリが存在しない場合は作成
         db_dir = os.path.dirname(db_path)
         if db_dir:
+            dir_existed_before = os.path.exists(db_dir)
             os.makedirs(db_dir, exist_ok=True)
 
-            # .gitignore にデータベースファイルを追加
+            # .gitignore を処理
             db_filename = os.path.basename(db_path)
             gitignore_path = os.path.join(db_dir, ".gitignore")
 
-            # .gitignoreファイルが存在しない場合、またはdb_filenameが記載されていない場合に追記
-            try:
-                with open(gitignore_path, "r", encoding="utf-8") as f:
-                    content = f.read()
-            except FileNotFoundError:
-                content = ""
+            if not dir_existed_before:
+                # ディレクトリが新規作成された場合、'*'を書き込む
+                with open(gitignore_path, "w", encoding="utf-8") as f:
+                    f.write("*\n")
+            else:
+                # ディレクトリが既存の場合、dbファイル名のみを追記
+                try:
+                    with open(gitignore_path, "r", encoding="utf-8") as f:
+                        content = f.read()
+                except FileNotFoundError:
+                    content = ""
 
-            if db_filename not in content:
-                with open(gitignore_path, "a", encoding="utf-8") as f:
-                    f.write(f"\n{db_filename}\n")
+                if db_filename not in content:
+                    with open(gitignore_path, "a", encoding="utf-8") as f:
+                        f.write(f"\n{db_filename}\n")
 
         # データベースファイルが実際に存在するかチェック
         db_file_exists = os.path.exists(db_path)
