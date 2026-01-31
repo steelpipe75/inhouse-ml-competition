@@ -15,8 +15,8 @@ Streamlitを用いて、以下の機能を提供します。
 
 ### 変更しないでください（アプリの構造に関わるファイル・フォルダ）
 
-- `pages/` : Streamlitの各ページ（概要・投稿・リーダーボード）
-- `Home.py` : Streamlitアプリのメインファイル
+- `contents/` : Streamlitの各ページ（概要・投稿・リーダーボード）
+- `streamlit_app.py` : Streamlitアプリのメインファイル
 - `utils.py` : 共通関数ファイル
 
 ### ユーザーがカスタマイズするファイル・フォルダ
@@ -65,7 +65,7 @@ pip install -r requirements.txt
 2. アプリの起動
 
 ```bash
-streamlit run Home.py
+streamlit run streamlit_app.py
 ```
 
 3. Google Sheets API設定
