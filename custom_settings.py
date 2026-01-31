@@ -40,7 +40,10 @@ SUBMISSION_ADDITIONAL_INFO: List[Dict] = [
         "id": "comment",
         "label": "コメント",
         "type": "text_input",
-        "kwargs": {"max_chars": 200},
+        "kwargs": {
+            "max_chars": 200,
+            "icon": ":material/sticky_note_2:"
+        },
     },
 ]
 _additional_columns: List[str] = [info["id"] for info in SUBMISSION_ADDITIONAL_INFO]

@@ -49,7 +49,7 @@ def show_leaderboard() -> None:
                     "submission_time", ascending=False
                 ).drop_duplicates(subset=[user_col], keep="first")
 
-        public_tab, private_tab = st.tabs(["Public", "Private"])
+        public_tab, private_tab = st.tabs([":material/public: Public", ":material/license: Private"])
 
         with public_tab:
             st.header(":material/table: Public Leaderboard")
