@@ -122,3 +122,17 @@ def check_password(always_protect: bool = False) -> None:
 
         # 認証が完了するまで、これ以降のコードは実行させない
         st.stop()
+
+
+NAVIGATION_PAGES = [
+    st.Page("contents/home.py", title="Home", icon=":material/home:"),
+    st.Page(
+        "contents/problem.py", title="概要・データ", icon=":material/menu_book:"
+    ),
+    st.Page("contents/submit.py", title="予測結果の投稿", icon=":material/send:"),
+    st.Page(
+        "contents/leaderboard.py",
+        title="リーダーボード",
+        icon=":material/leaderboard:",
+    ),
+]

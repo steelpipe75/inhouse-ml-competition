@@ -6,6 +6,7 @@ import streamlit as st
 
 from data_store import get_data_store
 from config import AUTH
+from utils import NAVIGATION_PAGES
 
 # --- ユーザーが変更可能なカスタマイズ用変数 ---
 LEADERBOARD_SHOW_LATEST_ONLY: bool = False  # リーダーボードに各ユーザーの最新の投稿のみを表示するか (True: 最新のみ, False: 全ての投稿)
@@ -125,3 +126,10 @@ def filter_leaderboard(leaderboard_df: pd.DataFrame) -> pd.DataFrame:
         df["submission_time"] = df["submission_time"].dt.tz_convert("Asia/Tokyo")
 
     return df
+
+
+APP_NAVIGATION_PAGES = NAVIGATION_PAGES + [
+    st.Page(
+        "competition_files/contents/playground.py", title="playground", icon=":material/terminal:"
+    ),
+]
