@@ -71,8 +71,10 @@ def show_submission() -> None:
         else:
             # ground_truthが設定されているかチェック
             if not get_data_store().has_ground_truth():
-                st.error("正解データが登録されていません。管理者に連絡いただくか、正解データを登録してください。")
-                return # ここで処理を中断
+                st.error(
+                    "正解データが登録されていません。管理者に連絡いただくか、正解データを登録してください。"
+                )
+                return  # ここで処理を中断
             with st.spinner("投稿を処理中..."):
                 try:
                     submission_df = pd.read_csv(uploaded_file)

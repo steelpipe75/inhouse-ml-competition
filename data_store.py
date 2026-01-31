@@ -203,7 +203,9 @@ class BaseDBDataStore(DataStore):
                 for h in header:
                     is_pk = h.lower() == "id"
                     # ground_truthのidは整数とは限らないため、Text型を主キーにする
-                    columns.append(sqlalchemy.Column(h, sqlalchemy.Text, primary_key=is_pk))
+                    columns.append(
+                        sqlalchemy.Column(h, sqlalchemy.Text, primary_key=is_pk)
+                    )
             else:
                 # leaderboardテーブルなどの場合
                 # id列を主キーとして定義（自動インクリメント）
@@ -222,7 +224,9 @@ class BaseDBDataStore(DataStore):
             meta.create_all(self.engine)
 
     def read_ground_truth(self, header: List[str]) -> pd.DataFrame:
-        self._create_table_if_not_exists(self.ground_truth_table_name, header, is_ground_truth_table=True)
+        self._create_table_if_not_exists(
+            self.ground_truth_table_name, header, is_ground_truth_table=True
+        )
         try:
             return pd.read_sql(self.ground_truth_table_name, self.engine)
         except Exception as e:
@@ -230,9 +234,7 @@ class BaseDBDataStore(DataStore):
             return pd.DataFrame(columns=header)
 
     def read_leaderboard(self, header: List[str]) -> pd.DataFrame:
-        self._create_table_if_not_exists(
-            self.leaderboard_table_name, header
-        )
+        self._create_table_if_not_exists(self.leaderboard_table_name, header)
         try:
             return pd.read_sql(self.leaderboard_table_name, self.engine)
         except Exception as e:
