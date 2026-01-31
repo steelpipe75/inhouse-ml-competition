@@ -18,6 +18,7 @@ from config import (
     EMAIL_HASH_SALT,
 )
 from utils import page_config, check_password
+from data_store import get_data_store
 
 JST = ZoneInfo("Asia/Tokyo")
 
@@ -68,6 +69,10 @@ def show_submission() -> None:
         elif not uploaded_file:
             st.error("CSVファイルをアップロードしてください。")
         else:
+            # ground_truthが設定されているかチェック
+            if not get_data_store().has_ground_truth():
+                st.error("正解データが登録されていません。管理者に連絡いただくか、正解データを登録してください。")
+                return # ここで処理を中断
             with st.spinner("投稿を処理中..."):
                 try:
                     submission_df = pd.read_csv(uploaded_file)
