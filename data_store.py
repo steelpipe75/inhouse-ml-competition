@@ -236,7 +236,11 @@ class BaseDBDataStore(DataStore):
     def read_leaderboard(self, header: List[str]) -> pd.DataFrame:
         self._create_table_if_not_exists(self.leaderboard_table_name, header)
         try:
-            return pd.read_sql(self.leaderboard_table_name, self.engine)
+            df = pd.read_sql(self.leaderboard_table_name, self.engine)
+            # 自動インクリメントのid列は表示しない
+            if "id" in df.columns:
+                df = df.drop("id", axis=1)
+            return df
         except Exception as e:
             print(f"An error occurred while reading the leaderboard from DB: {e}")
             return pd.DataFrame(columns=header)
