@@ -14,7 +14,6 @@ check_password()
 
 
 def playground() -> None:
-
     screenD = ScreenData(setTimeout=1000)
     data = screenD.st_screen_data()
 

@@ -69,7 +69,9 @@ def check_password(always_protect: bool = False) -> None:
                     st.logout()
                     st.rerun()
 
-                st.caption(f":material/account_circle: user : {st.user.name}  \n:material/mail: email : {st.user.email}")
+                st.caption(
+                    f":material/account_circle: user : {st.user.name}  \n:material/mail: email : {st.user.email}"
+                )
     else:
         if password_hash_exists:
             with st.sidebar:
@@ -85,7 +87,9 @@ def check_password(always_protect: bool = False) -> None:
     # --- 以下、保護対象ページの場合のロジック ---
     if AUTH:
         if not st.user.is_logged_in:
-            st.subheader(":material/lock: このページの内容にアクセスするにはログインしてください")
+            st.subheader(
+                ":material/lock: このページの内容にアクセスするにはログインしてください"
+            )
             if st.button("ログイン", icon=":material/login:"):
                 st.login()
             st.stop()
@@ -99,7 +103,9 @@ def check_password(always_protect: bool = False) -> None:
             return
 
         # --- 以下、未認証の場合の処理 ---
-        st.subheader(":material/lock: このページの内容にアクセスするには合言葉を入力してください")
+        st.subheader(
+            ":material/lock: このページの内容にアクセスするには合言葉を入力してください"
+        )
         password = st.text_input("合言葉", type="password", key="password_input")
 
         if st.button("ロック解除", icon=":material/lock_open:"):
