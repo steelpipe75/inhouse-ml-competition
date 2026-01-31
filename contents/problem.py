@@ -6,13 +6,13 @@ from utils import page_config, check_password
 
 page_config()
 
+st.title(":material/menu_book: 概要・データ")
+
 # 認証チェック
 check_password()
 
 
 def show_overview_and_data() -> None:
-    st.title(":material/menu_book: 概要・データ")
-
     # 問題説明
     st.header(":material/description: 問題説明")
     if os.path.exists(PROBLEM_FILE):
@@ -33,7 +33,7 @@ def show_overview_and_data() -> None:
                         f"{filename} をダウンロード",
                         f,
                         file_name=filename,
-                        icon=":material/download:"
+                        icon=":material/download:",
                     )
     else:
         st.error("データフォルダが見つかりません。")

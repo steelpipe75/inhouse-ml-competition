@@ -15,14 +15,14 @@ Streamlitを用いて、以下の機能を提供します。
 
 ### 変更しないでください（アプリの構造に関わるファイル・フォルダ）
 
-- `pages/` : Streamlitの各ページ（概要・投稿・リーダーボード）
-- `Home.py` : Streamlitアプリのメインファイル
+- `contents/` : Streamlitの各ページ（概要・投稿・リーダーボード）
+- `streamlit_app.py` : Streamlitアプリのメインファイル
 - `utils.py` : 共通関数ファイル
 
 ### ユーザーがカスタマイズするファイル・フォルダ
 
 - `competition_files/data/` : 「概要・データ」で配布するファイル
-- `competition_files/content/` : 問題説明Markdown・ホーム画面Markdown
+- `competition_files/contents/` : 問題説明Markdown・ホーム画面Markdown
 - `config.py` : 設定ファイル（基本設定）。詳細は後述。
 - `custom_settings.py` : ユーザーがカスタマイズのために編集する設定ファイル。詳細は後述。
 
@@ -36,7 +36,6 @@ Streamlitを用いて、以下の機能を提供します。
 | `SPREADSHEET_NAME` | 連携するGoogleスプレッドシートの名前 |
 | `LEADERBOARD_WORKSHEET_NAME` | リーダーボードが格納されるワークシート名 |
 | `GROUND_TRUTH_WORKSHEET_NAME` | 正解データが格納されるワークシート名 |
-| `PLAYGROUND_PAGE_URL` | PlaygroundページのURL |
 | `IS_COMPETITION_RUNNING` | コンペ開催中かどうかのフラグ（`True`:開催中, `False`:終了後） |
 
 ### `custom_settings.py`
@@ -65,7 +64,7 @@ pip install -r requirements.txt
 2. アプリの起動
 
 ```bash
-streamlit run Home.py
+streamlit run streamlit_app.py
 ```
 
 3. Google Sheets API設定
