@@ -107,7 +107,6 @@ def write_submission(submission_data: Dict) -> None:
     data_store.write_submission(
         submission_data,
         LEADERBOARD_HEADER,
-        update_existing=False,  # 常に新しい行として追加
         user_col=user_col,
     )
 

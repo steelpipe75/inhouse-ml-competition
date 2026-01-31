@@ -42,7 +42,6 @@ class DataStore(ABC):
         self,
         submission_data: Dict[str, Any],
         header: List[str],
-        update_existing: bool,
         user_col: str,
     ):
         """投稿データを書き込む。"""
@@ -134,39 +133,14 @@ class GoogleSheetDataStore(DataStore):
         self,
         submission_data: Dict[str, Any],
         header: List[str],
-        update_existing: bool,
         user_col: str,
     ):
         worksheet = self._get_worksheet(self.leaderboard_worksheet_name, header=header)
+
+        # 常に新しい行として追加する
         current_df = self.read_leaderboard(header)
         new_row_df = pd.DataFrame([submission_data], columns=header)
-
-        if update_existing and not current_df.empty:
-            user_identifier = submission_data.get(user_col)
-            # user_colが存在し、かつ空でない場合のみ更新を試みる
-            if user_identifier:
-                # 文字列に変換して比較
-                current_df[user_col] = current_df[user_col].astype(str)
-                user_identifier = str(user_identifier)
-
-                existing_user_mask = current_df[user_col] == user_identifier
-                if existing_user_mask.any():
-                    # 既存の行を更新
-                    idx = current_df.index[existing_user_mask].tolist()[0]
-                    # submission_dataに含まれるキーのみを更新
-                    for key, value in submission_data.items():
-                        if key in current_df.columns:
-                            current_df.loc[idx, key] = value
-                    updated_df = current_df
-                else:
-                    # 存在しない場合は追加
-                    updated_df = pd.concat([current_df, new_row_df], ignore_index=True)
-            else:
-                # user_identifierがない場合は単純に追加
-                updated_df = pd.concat([current_df, new_row_df], ignore_index=True)
-        else:
-            # 更新しないか、データが空の場合は単純に追加
-            updated_df = pd.concat([current_df, new_row_df], ignore_index=True)
+        updated_df = pd.concat([current_df, new_row_df], ignore_index=True)
 
         set_with_dataframe(worksheet, updated_df.reindex(columns=header), resize=True)
 
@@ -272,12 +246,11 @@ class BaseDBDataStore(DataStore):
         self,
         submission_data: Dict[str, Any],
         header: List[str],
-        update_existing: bool,
         user_col: str,
     ):
         self._create_table_if_not_exists(self.leaderboard_table_name, header, user_col)
 
-        # B案の仕様に基づき、常に新しい行として追加（INSERT）する
+        # 常に新しい行として追加（INSERT）する
         df = pd.DataFrame([submission_data], columns=header)
         df.to_sql(
             self.leaderboard_table_name,
