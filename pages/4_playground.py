@@ -12,7 +12,7 @@ check_password()
 
 
 def playground() -> None:
-    st.title("playground")
+    st.title(":material/terminal: playground")
 
     screenD = ScreenData(setTimeout=1000)
     data = screenD.st_screen_data()
