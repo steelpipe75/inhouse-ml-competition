@@ -180,7 +180,6 @@ class BaseDBDataStore(DataStore):
         self,
         table_name: str,
         header: List[str],
-        user_col: Optional[str] = None,
         is_ground_truth_table: bool = False,
     ):
         # ヘッダーに予約語 "id" が含まれていないかチェック（大文字小文字を区別しない）
@@ -234,8 +233,8 @@ class BaseDBDataStore(DataStore):
 
     def read_leaderboard(self, header: List[str]) -> pd.DataFrame:
         self._create_table_if_not_exists(
-            self.leaderboard_table_name, header, user_col="username"
-        )  # ToDo: user_colを固定しない
+            self.leaderboard_table_name, header
+        )
         try:
             return pd.read_sql(self.leaderboard_table_name, self.engine)
         except Exception as e:
@@ -246,9 +245,8 @@ class BaseDBDataStore(DataStore):
         self,
         submission_data: Dict[str, Any],
         header: List[str],
-        user_col: str,
     ):
-        self._create_table_if_not_exists(self.leaderboard_table_name, header, user_col)
+        self._create_table_if_not_exists(self.leaderboard_table_name, header)
 
         # 常に新しい行として追加（INSERT）する
         df = pd.DataFrame([submission_data], columns=header)
