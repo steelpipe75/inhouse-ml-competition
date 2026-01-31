@@ -1,4 +1,4 @@
-# :material/home: ようこそ！
+# :material/waving_hand: ようこそ！
 
 このページはカスタマイズ可能です。
 
