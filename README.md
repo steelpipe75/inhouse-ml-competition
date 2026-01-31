@@ -22,7 +22,7 @@ Streamlitを用いて、以下の機能を提供します。
 ### ユーザーがカスタマイズするファイル・フォルダ
 
 - `competition_files/data/` : 「概要・データ」で配布するファイル
-- `competition_files/content/` : 問題説明Markdown・ホーム画面Markdown
+- `competition_files/contents/` : 問題説明Markdown・ホーム画面Markdown
 - `config.py` : 設定ファイル（基本設定）。詳細は後述。
 - `custom_settings.py` : ユーザーがカスタマイズのために編集する設定ファイル。詳細は後述。
 

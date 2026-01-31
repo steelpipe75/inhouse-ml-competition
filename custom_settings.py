@@ -12,11 +12,11 @@ LEADERBOARD_SHOW_LATEST_ONLY: bool = False  # リーダーボードに各ユー�
 DATA_DIR = (
     "competition_files/data"  # データ（学習・テスト・サンプル提出）のディレクトリ名
 )
-PROBLEM_FILE = "competition_files/content/problem.md"  # 問題説明Markdownファイルのパス
+PROBLEM_FILE = "competition_files/contents/problem.md"  # 問題説明Markdownファイルのパス
 SAMPLE_SUBMISSION_FILE = os.path.join(
     DATA_DIR, "sample_submission.csv"
 )  # サンプル提出ファイルのパス
-HOME_CONTENT_FILE = "competition_files/content/home.md"  # Homeページのカスタマイズ用コンテンツファイルのパス
+HOME_CONTENT_FILE = "competition_files/contents/home.md"  # Homeページのカスタマイズ用コンテンツファイルのパス
 LEADERBOARD_SORT_ASCENDING: bool = (
     True  # リーダーボードのスコアソート順（True:昇順, False:降順）
 )
