@@ -22,7 +22,7 @@ check_password(always_protect=True)
 
 
 def show_leaderboard() -> None:
-    st.title("リーダーボード")
+    st.title(":material/leaderboard: リーダーボード")
 
     # データストアのタイプがDBベースの場合、ground_truthの存在チェック
     if DATA_STORE_TYPE != "google_sheet":
@@ -52,7 +52,7 @@ def show_leaderboard() -> None:
         public_tab, private_tab = st.tabs(["Public", "Private"])
 
         with public_tab:
-            st.header("Public Leaderboard")
+            st.header(":material/table: Public Leaderboard")
             # Publicスコアでのリーダーボード（コンペ中・終了後にかかわらず表示）
             df_public = leaderboard.drop("email_hash", axis=1, errors="ignore")
             if "private_score" in df_public.columns:
@@ -68,7 +68,7 @@ def show_leaderboard() -> None:
 
             st.dataframe(filter_leaderboard(df_public), hide_index=True)
 
-            st.subheader("スコア分布")
+            st.subheader(":material/bar_chart: スコア分布")
             fig_public = px.histogram(
                 df_public,
                 x="public_score",
@@ -84,7 +84,7 @@ def show_leaderboard() -> None:
                     "Privateリーダーボードは、コンペティション終了後に公開されます。"
                 )
             else:
-                st.header("Private Leaderboard")
+                st.header(":material/table: Private Leaderboard")
                 # Privateスコアでのリーダーボード
                 df_private = leaderboard.drop("email_hash", axis=1, errors="ignore")
                 df_private = df_private.sort_values(
@@ -97,7 +97,7 @@ def show_leaderboard() -> None:
 
                 st.dataframe(filter_leaderboard(df_private), hide_index=True)
 
-                st.subheader("Public vs Private スコア")
+                st.subheader(":material/scatter_plot: Public vs Private スコア")
                 fig_scatter = px.scatter(
                     df_private,
                     x="public_score",
@@ -111,7 +111,7 @@ def show_leaderboard() -> None:
                 )
                 st.plotly_chart(fig_scatter, width="stretch")
 
-                st.subheader("スコア分布")
+                st.subheader(":material/bar_chart: スコア分布")
                 score_df = df_private[["public_score", "private_score"]].melt(
                     var_name="score_type", value_name="score"
                 )

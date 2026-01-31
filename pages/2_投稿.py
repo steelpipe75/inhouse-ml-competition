@@ -49,7 +49,7 @@ def render_additional_inputs() -> Dict:
 
 
 def show_submission() -> None:
-    st.title("予測結果の投稿")
+    st.title(":material/send: 予測結果の投稿")
     username = st.text_input("ユーザー名")
 
     # 追加の入力欄を動的に生成
@@ -57,7 +57,7 @@ def show_submission() -> None:
 
     uploaded_file = st.file_uploader("予測CSVをアップロード", type="csv")
 
-    if st.button("投稿する"):
+    if st.button("投稿する", icon=":material/send:"):
         if AUTH:
             email = st.user.email
         else:

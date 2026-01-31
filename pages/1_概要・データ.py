@@ -30,7 +30,10 @@ def show_overview_and_data() -> None:
             if os.path.isfile(filepath):
                 with open(filepath, "rb") as f:
                     st.download_button(
-                        f"{filename} をダウンロード", f, file_name=filename
+                        f"{filename} をダウンロード",
+                        f,
+                        file_name=filename,
+                        icon=":material/download:"
                     )
     else:
         st.error("データフォルダが見つかりません。")
