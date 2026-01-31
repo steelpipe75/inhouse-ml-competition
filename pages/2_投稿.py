@@ -24,6 +24,8 @@ JST = ZoneInfo("Asia/Tokyo")
 
 page_config()
 
+st.title(":material/send: 予測結果の投稿")
+
 # 認証チェック
 check_password(always_protect=True)
 
@@ -49,7 +51,6 @@ def render_additional_inputs() -> Dict:
 
 
 def show_submission() -> None:
-    st.title(":material/send: 予測結果の投稿")
     username = st.text_input("ユーザー名", icon=":material/person:")
 
     # 追加の入力欄を動的に生成

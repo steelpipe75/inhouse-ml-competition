@@ -7,12 +7,13 @@ from utils import page_config, check_password
 
 page_config()
 
+st.title(":material/terminal: playground")
+
 # 認証チェック
 check_password()
 
 
 def playground() -> None:
-    st.title(":material/terminal: playground")
 
     screenD = ScreenData(setTimeout=1000)
     data = screenD.st_screen_data()

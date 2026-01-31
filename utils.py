@@ -92,7 +92,6 @@ def check_password(always_protect: bool = False) -> None:
             return
 
         # --- 以下、未認証の場合の処理 ---
-        st.title(PAGE_TITLE)
         st.subheader("合言葉を入力してください")
         password = st.text_input("合言葉", type="password", key="password_input")
 

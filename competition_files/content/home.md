@@ -1,4 +1,4 @@
-# :material/waving_hand: ようこそ！
+## :material/waving_hand: ようこそ！
 
 このページはカスタマイズ可能です。
 
@@ -7,13 +7,13 @@
 
 ---
 
-## :material/code_blocks: サンプル
+### :material/code_blocks: サンプル
 
 - ここにお知らせやルールなどを自由に記載できます。
 - Markdown記法が使えます。
 
 ---
 
-## :material/key: 合言葉
+### :material/key: 合言葉
 
 投稿、リーダーボードページの合言葉は `test` です。

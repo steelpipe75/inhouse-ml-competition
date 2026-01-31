@@ -17,13 +17,13 @@ from data_store import get_data_store
 
 page_config()
 
+st.title(":material/leaderboard: リーダーボード")
+
 # 認証チェック
 check_password(always_protect=True)
 
 
 def show_leaderboard() -> None:
-    st.title(":material/leaderboard: リーダーボード")
-
     # データストアのタイプがDBベースの場合、ground_truthの存在チェック
     if DATA_STORE_TYPE != "google_sheet":
         data_store = get_data_store()
