@@ -14,7 +14,7 @@ import streamlit as st
 from gspread.worksheet import Worksheet
 import sqlalchemy
 from sqlalchemy.exc import SQLAlchemyError
-import os
+from pathlib import Path
 
 
 # スコープ（権限）の設定
@@ -265,34 +265,32 @@ class SQLiteDataStore(BaseDBDataStore):
         leaderboard_table_name: str,
         ground_truth_table_name: str,
     ):
-        # データベースファイルのためのディレクトリが存在しない場合は作成
-        db_dir = os.path.dirname(db_path)
-        if db_dir:
-            dir_existed_before = os.path.exists(db_dir)
-            os.makedirs(db_dir, exist_ok=True)
+        db_path_obj = Path(db_path)
+        db_dir = db_path_obj.parent
 
-            # .gitignore を処理
-            db_filename = os.path.basename(db_path)
-            gitignore_path = os.path.join(db_dir, ".gitignore")
+        dir_existed_before = db_dir.exists()
+        db_dir.mkdir(parents=True, exist_ok=True)
 
-            if not dir_existed_before:
-                # ディレクトリが新規作成された場合、'*'を書き込む
-                with open(gitignore_path, "w", encoding="utf-8") as f:
-                    f.write("*\n")
-            else:
-                # ディレクトリが既存の場合、dbファイル名のみを追記
-                try:
-                    with open(gitignore_path, "r", encoding="utf-8") as f:
-                        content = f.read()
-                except FileNotFoundError:
-                    content = ""
+        # .gitignore を処理
+        db_filename = db_path_obj.name
+        gitignore_path = db_dir / ".gitignore"
 
-                if db_filename not in content:
-                    with open(gitignore_path, "a", encoding="utf-8") as f:
-                        f.write(f"\n{db_filename}\n")
+        if not dir_existed_before:
+            # ディレクトリが新規作成された場合、'*'を書き込む
+            gitignore_path.write_text("*\n", encoding="utf-8")
+        else:
+            # ディレクトリが既存の場合、dbファイル名のみを追記
+            try:
+                content = gitignore_path.read_text(encoding="utf-8")
+            except FileNotFoundError:
+                content = ""
+
+            if db_filename not in content:
+                with gitignore_path.open("a", encoding="utf-8") as f:
+                    f.write(f"\n{db_filename}\n")
 
         # データベースファイルが実際に存在するかチェック
-        db_file_exists = os.path.exists(db_path)
+        db_file_exists = db_path_obj.exists()
 
         engine = sqlalchemy.create_engine(f"sqlite:///{db_path}")
 
