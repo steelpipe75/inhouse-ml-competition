@@ -221,6 +221,7 @@ class BaseDBDataStore(DataStore):
         if not inspector.has_table(table_name):
             meta = sqlalchemy.MetaData()
             columns = []
+            table_args = []
 
             if is_ground_truth_table:
                 # ground_truthテーブルの場合
@@ -244,26 +245,10 @@ class BaseDBDataStore(DataStore):
                 columns.extend([sqlalchemy.Column(h, sqlalchemy.Text) for h in header])
 
             # テーブル定義
-            sqlalchemy.Table(table_name, meta, *columns)
+            sqlalchemy.Table(table_name, meta, *columns, *table_args)
 
             # テーブル作成
             meta.create_all(self.engine)
-
-            if user_col and table_name == self.leaderboard_table_name:
-                with self.engine.connect() as con:
-                    try:
-                        # ALTER TABLE文はデータベース製品による方言の差が大きい
-                        # ここでは一般的なSQL標準に近い引用符を使った構文を試す
-                        con.execute(
-                            sqlalchemy.text(
-                                f'ALTER TABLE "{table_name}" ADD UNIQUE ("{user_col}")'
-                            )
-                        )
-                        con.commit()
-                    except SQLAlchemyError as e:
-                        print(
-                            f"Could not add UNIQUE constraint on {user_col}: {e}. This might be expected if the DB dialect does not support this syntax."
-                        )
 
     def read_ground_truth(self, header: List[str]) -> pd.DataFrame:
         self._create_table_if_not_exists(self.ground_truth_table_name, header, is_ground_truth_table=True)
@@ -292,44 +277,14 @@ class BaseDBDataStore(DataStore):
     ):
         self._create_table_if_not_exists(self.leaderboard_table_name, header, user_col)
 
-        user_identifier = submission_data.get(user_col)
-
-        if update_existing and user_identifier:
-            with self.engine.connect() as con:
-                tbl = sqlalchemy.Table(
-                    self.leaderboard_table_name,
-                    sqlalchemy.MetaData(),
-                    autoload_with=self.engine,
-                )
-
-                # 既存レコードの確認
-                select_stmt = sqlalchemy.select(tbl).where(
-                    tbl.c[user_col] == user_identifier
-                )
-                result = con.execute(select_stmt).fetchone()
-
-                if result:
-                    # 更新
-                    update_stmt = (
-                        sqlalchemy.update(tbl)
-                        .where(tbl.c[user_col] == user_identifier)
-                        .values(**submission_data)
-                    )
-                    con.execute(update_stmt)
-                else:
-                    # 挿入
-                    insert_stmt = sqlalchemy.insert(tbl).values(**submission_data)
-                    con.execute(insert_stmt)
-                con.commit()
-        else:
-            # 単純挿入
-            df = pd.DataFrame([submission_data], columns=header)
-            df.to_sql(
-                self.leaderboard_table_name,
-                self.engine,
-                if_exists="append",
-                index=False,
-            )
+        # B案の仕様に基づき、常に新しい行として追加（INSERT）する
+        df = pd.DataFrame([submission_data], columns=header)
+        df.to_sql(
+            self.leaderboard_table_name,
+            self.engine,
+            if_exists="append",
+            index=False,
+        )
 
 
 class SQLiteDataStore(BaseDBDataStore):
