@@ -213,21 +213,35 @@ class BaseDBDataStore(DataStore):
         # ground_truth_tableの場合を除外
         if not is_ground_truth_table and "id" in [h.lower() for h in header]:
             raise ValueError(
-                "ヘッダーに 'id' という列名が含まれています。この名前はデータベースの自動採番主キーとして予約されているため使用できません。列名を変更してください。"
+                "リーダーボードのヘッダーに 'id' という列名が含まれています。"
+                "この名前はデータベースの自動採番主キーとして予約されているため使用できません。列名を変更してください。"
             )
 
         inspector = sqlalchemy.inspect(self.engine)
         if not inspector.has_table(table_name):
             meta = sqlalchemy.MetaData()
+            columns = []
 
-            # id列を主キーとして定義（自動インクリメント）
-            columns = [
-                sqlalchemy.Column(
-                    "id", sqlalchemy.Integer, primary_key=True, autoincrement=True
+            if is_ground_truth_table:
+                # ground_truthテーブルの場合
+                if "id" not in [h.lower() for h in header]:
+                    raise ValueError(
+                        "ground_truthテーブルのヘッダーには 'id' 列が含まれている必要があります。"
+                    )
+                for h in header:
+                    is_pk = h.lower() == "id"
+                    # ground_truthのidは整数とは限らないため、Text型を主キーにする
+                    columns.append(sqlalchemy.Column(h, sqlalchemy.Text, primary_key=is_pk))
+            else:
+                # leaderboardテーブルなどの場合
+                # id列を主キーとして定義（自動インクリメント）
+                columns.append(
+                    sqlalchemy.Column(
+                        "id", sqlalchemy.Integer, primary_key=True, autoincrement=True
+                    )
                 )
-            ]
-            # headerの列を汎用的なText型として追加
-            columns.extend([sqlalchemy.Column(h, sqlalchemy.Text) for h in header])
+                # headerの列を汎用的なText型として追加
+                columns.extend([sqlalchemy.Column(h, sqlalchemy.Text) for h in header])
 
             # テーブル定義
             sqlalchemy.Table(table_name, meta, *columns)
