@@ -40,7 +40,7 @@ else:
 
 # --- Data Store Settings ---
 # データストアの種類を選択: "google_sheet", "sqlite", "mysql", "postgresql"
-DATA_STORE_TYPE = "sqlite"
+DATA_STORE_TYPE = "google_sheet"
 
 # --- For SQLite ---
 DB_PATH = "db/competition.db"
