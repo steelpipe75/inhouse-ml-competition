@@ -23,7 +23,20 @@ def register_ground_truth_from_excel():
     db_path = project_root / config.DB_PATH
 
     # データベースファイルの親ディレクトリが存在しない場合は作成
-    db_path.parent.mkdir(parents=True, exist_ok=True)
+    db_dir = db_path.parent
+    db_dir.mkdir(parents=True, exist_ok=True)
+
+    # .gitignore にデータベースファイルを追加
+    db_filename = db_path.name
+    gitignore_path = db_dir / ".gitignore"
+    try:
+        gitignore_content = gitignore_path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        gitignore_content = ""
+
+    if db_filename not in gitignore_content:
+        with gitignore_path.open("a", encoding="utf-8") as f:
+            f.write(f"\n{db_filename}\n")
 
     table_name = config.GROUND_TRUTH_TABLE_NAME
     excel_path = project_root / "competition_files" / "sample_spreadsheets.xlsx"
