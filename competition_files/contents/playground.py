@@ -19,10 +19,13 @@ def playground() -> None:
     screenD = ScreenData(setTimeout=1000)
     data = screenD.st_screen_data()
 
+    calculated_height = int(data["innerHeight"] * 0.9)
+    iframe_height = max(calculated_height, 720)
+
     components.iframe(
         src=PLAYGROUND_PAGE_URL,
         width=data["innerWidth"],
-        height=int(data["innerHeight"] * 0.9),
+        height=iframe_height,
     )
 
 
