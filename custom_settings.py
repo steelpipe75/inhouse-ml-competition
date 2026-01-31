@@ -40,7 +40,10 @@ SUBMISSION_ADDITIONAL_INFO: List[Dict] = [
         "id": "comment",
         "label": "コメント",
         "type": "text_input",
-        "kwargs": {"max_chars": 200},
+        "kwargs": {
+            "max_chars": 200,
+            "icon": ":material/sticky_note_2:"
+        },
     },
 ]
 _additional_columns: List[str] = [info["id"] for info in SUBMISSION_ADDITIONAL_INFO]
@@ -103,12 +106,10 @@ def read_leaderboard() -> pd.DataFrame:
 # --- リーダーボードに新しい投稿を書き込み ---
 def write_submission(submission_data: Dict) -> None:
     data_store = get_data_store()
-    user_col = "email_hash" if AUTH else "username"
+    # user_colはdata_store.write_submissionで使われなくなったため削除
     data_store.write_submission(
         submission_data,
         LEADERBOARD_HEADER,
-        update_existing=False,  # 常に新しい行として追加
-        user_col=user_col,
     )
 
 

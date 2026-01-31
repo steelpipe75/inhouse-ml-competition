@@ -58,7 +58,7 @@ def check_password(always_protect: bool = False) -> None:
                     st.logout()
                     st.rerun()
 
-                st.caption(f"user : {st.user.name}  \nemail : {st.user.email}")
+                st.caption(f":material/account_circle: user : {st.user.name}  \n:material/mail: email : {st.user.email}")
 
     # このページが保護対象かどうかを判断
     if not PROTECT_ALL_PAGES and not always_protect:

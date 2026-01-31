@@ -18,7 +18,7 @@ PROTECT_ALL_PAGES = False  # Trueの場合、すべてのページを保護し�
 
 # --- Page Settings ---
 PAGE_TITLE = "内輪向け機械学習コンペアプリ"
-PAGE_ICON = "🏆"
+PAGE_ICON = ":material/trophy:"
 
 # --- Auth ---
 try:
