@@ -42,7 +42,6 @@ class DataStore(ABC):
         self,
         submission_data: Dict[str, Any],
         header: List[str],
-        user_col: str,
     ):
         """投稿データを書き込む。"""
         pass
@@ -133,7 +132,6 @@ class GoogleSheetDataStore(DataStore):
         self,
         submission_data: Dict[str, Any],
         header: List[str],
-        user_col: str,
     ):
         worksheet = self._get_worksheet(self.leaderboard_worksheet_name, header=header)
 
