@@ -97,6 +97,20 @@ def show_leaderboard() -> None:
 
                 st.dataframe(filter_leaderboard(df_private), hide_index=True)
 
+                st.subheader("Public vs Private スコア")
+                fig_scatter = px.scatter(
+                    df_private,
+                    x="public_score",
+                    y="private_score",
+                    title="Public Score vs Private Score",
+                    labels={
+                        "public_score": "Public Score",
+                        "private_score": "Private Score",
+                    },
+                    hover_data=["username"] if not AUTH else [],
+                )
+                st.plotly_chart(fig_scatter, width="stretch")
+
                 st.subheader("スコア分布")
                 score_df = df_private[["public_score", "private_score"]].melt(
                     var_name="score_type", value_name="score"
