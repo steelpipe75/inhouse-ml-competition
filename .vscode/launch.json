@@ -14,6 +14,13 @@
                 "run",
                 "Home.py"
             ]
+        },
+        {
+            "name": "Python デバッガー: 現在のファイル",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
         }
     ]
 }
