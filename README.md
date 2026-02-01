@@ -23,35 +23,32 @@ Streamlitを用いて、以下の機能を提供します。
 
 - `competition_files/data/` : 「概要・データ」で配布するファイル
 - `competition_files/contents/` : 問題説明Markdown・ホーム画面Markdown
-- `config.py` : 設定ファイル（基本設定）。詳細は後述。
-- `custom_settings.py` : ユーザーがカスタマイズのために編集する設定ファイル。詳細は後述。
+- `config.py` : コンペの設定を定義するファイル。詳細は後述。
 
 ## 設定ファイルの説明
 
 ### `config.py`
-アプリの基本設定を定義します。
+アプリの基本設定や、コンペの内容に合わせてユーザーがカスタマイズする項目を定義します。
 
-| 変数名 | 説明 |
-|---|---|
-| `SPREADSHEET_NAME` | 連携するGoogleスプレッドシートの名前 |
-| `LEADERBOARD_WORKSHEET_NAME` | リーダーボードが格納されるワークシート名 |
-| `GROUND_TRUTH_WORKSHEET_NAME` | 正解データが格納されるワークシート名 |
-| `IS_COMPETITION_RUNNING` | コンペ開催中かどうかのフラグ（`True`:開催中, `False`:終了後） |
-
-### `custom_settings.py`
-コンペの内容に合わせてユーザーがカスタマイズする項目を定義します。
-
-| 変数名 | 説明 |
-|---|---|
-| `DATA_DIR` | データファイル（学習・テスト等）を格納するディレクトリ |
-| `PROBLEM_FILE` | 問題説明Markdownファイルのパス |
-| `SAMPLE_SUBMISSION_FILE` | サンプル提出ファイルのパス |
-| `HOME_CONTENT_FILE` | Homeページのカスタマイズ用コンテンツファイルのパス |
-| `LEADERBOARD_SORT_ASCENDING` | リーダーボードのスコアソート順（`True`:昇順, `False`:降順） |
-| `score_submission` | public/privateスコアを計算する関数。コンペの評価指標に合わせてロジックを記述します。 |
-| `SUBMISSION_ADDITIONAL_INFO` | 投稿時にユーザーから追加で収集する情報を定義します。streamlitの入力ウィジェット設定を辞書のリストで指定します。 |
-| `LEADERBOARD_HEADER` | リーダーボード表示用のヘッダーリストを定義します。`SUBMISSION_ADDITIONAL_INFO`で追加した項目もここに追加します。 |
-| `GROUND_TRUTH_HEADER` | 正解データのヘッダーリストを定義します。スプレッドシートの列名と一致させる必要があります。 |
+| カテゴリ | 変数名/関数名 | 説明 |
+| :--- | :--- | :--- |
+| **基本設定** | `PAGE_TITLE`, `PAGE_ICON` | アプリのタイトルとアイコン |
+| | `IS_COMPETITION_RUNNING` | コンペ開催中かどうかのフラグ（`True`:開催中, `False`:終了後） |
+| **データストア** | `DATA_STORE_TYPE` | データストアの種類を選択 (`"google_sheet"`, `"sqlite"` など) |
+| | `SPREADSHEET_NAME` | Googleスプレッドシートの名前 (google_sheet選択時) |
+| | `LEADERBOARD_WORKSHEET_NAME`| リーダーボード用のワークシート名 (google_sheet選択時) |
+| | `GROUND_TRUTH_WORKSHEET_NAME`| 正解データ用のワークシート名 (google_sheet選択時) |
+| | `DB_PATH`, `DB_URL`| データベースのパスまたはURL (sqlite, mysql, postgresql選択時) |
+| **ファイルパス**| `DATA_DIR` | データファイル（学習・テスト等）を格納するディレクトリ |
+| | `PROBLEM_FILE` | 問題説明Markdownファイルのパス |
+| | `SAMPLE_SUBMISSION_FILE`| サンプル提出ファイルのパス |
+| | `HOME_CONTENT_FILE` | Homeページのカスタマイズ用コンテンツファイルのパス |
+| **リーダーボード**| `LEADERBOARD_SORT_ASCENDING`| リーダーボードのスコアソート順（`True`:昇順, `False`:降順） |
+| | `LEADERBOARD_SHOW_LATEST_ONLY`| 各ユーザーの最新の投稿のみを表示するかどうか |
+| **コンペ固有**| `score_submission` | public/privateスコアを計算する関数。コンペの評価指標に合わせてロジックを記述します。 |
+| | `SUBMISSION_ADDITIONAL_INFO`| 投稿時にユーザーから追加で収集する情報を定義します。 |
+| | `LEADERBOARD_HEADER` | リーダーボード表示用のヘッダーリストを定義します。 |
+| | `GROUND_TRUTH_HEADER` | 正解データのヘッダーリストを定義します。 |
 
 ## セットアップ方法
 
