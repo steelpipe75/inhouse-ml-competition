@@ -89,7 +89,9 @@ StreamlitアプリからGoogleスプレッドシートにアクセスするた�
 
     **secrets.tomlの例:**
     ```toml
-    APP_PASSWORD_HASH = "your_sha256_hashed_password_here"
+    AUTH = false # true : OIDC認証を使う / false : OIDC認証なし
+    APP_PASSWORD_HASH = "your_sha256_hashed_password_here" # 設定しない場合は合言葉保護なし(AUTH = false の時のみ有効)
+    EMAIL_HASH_SALT = "your_email_hash_salt_string_here" # メールアドレスハッシュ化のためのsalt
     
     [gcp_service_account]
     type = "service_account"
@@ -103,7 +105,19 @@ StreamlitアプリからGoogleスプレッドシートにアクセスするた�
     auth_provider_x509_cert_url = "https://www.googleapis.com/oauth2/v1/certs"
     client_x509_cert_url = "your-client-x509-cert-url"
     universe_domain = "googleapis.com"
+    
+    [auth]
+    redirect_uri = "your-redirect-uri"
+    cookie_secret = "your-cookie-secret"
+    client_id = "your-client-id"
+    client_secret = "your-client-secret"
+    server_metadata_url = "your-server-metadata-url"
     ```
+
+    *   **認証設定 (`AUTH`, `EMAIL_HASH_SALT`, `[auth]`)**
+        *   `AUTH`: OIDC認証を有効にするかどうかを設定します。`true`に設定するとOIDC認証を使用し、`false`の場合は使用しません。
+        *   `EMAIL_HASH_SALT`: ユーザーのメールアドレスをハッシュ化する際に使用するソルト文字列です。
+        *   `[auth]`: OIDC認証に関連する設定を定義します。`redirect_uri`、`cookie_secret`、`client_id`、`client_secret`、`server_metadata_url`など、OIDCプロバイダーから提供される情報を設定してください。
 
 3.  **Googleスプレッドシートの共有設定**
     *   コンペで使用するGoogleスプレッドシートを開きます。
