@@ -28,7 +28,6 @@ APP_NAVIGATION_PAGES = NAVIGATION_PAGES + [
 
 # --- Page Settings ---
 PAGE_TITLE = "内輪向け機械学習コンペアプリ"
-PAGE_ICON = ":material/trophy:"
 
 # --- Auth Settings ---
 try:

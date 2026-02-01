@@ -6,7 +6,6 @@ from PIL import Image
 from config import (
     PROTECT_ALL_PAGES,
     PAGE_TITLE,
-    PAGE_ICON,
     AUTH,
 )
 

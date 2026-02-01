@@ -32,7 +32,7 @@ Streamlitを用いて、以下の機能を提供します。
 
 | カテゴリ | 変数名/関数名 | 説明 |
 | :--- | :--- | :--- |
-| **基本設定** | `PAGE_TITLE`, `PAGE_ICON` | アプリのタイトルとアイコン |
+| **基本設定** | `PAGE_TITLE` | アプリのタイトル |
 | | `IS_COMPETITION_RUNNING` | コンペ開催中かどうかのフラグ（`True`:開催中, `False`:終了後） |
 | **データストア** | `DATA_STORE_TYPE` | データストアの種類を選択 (`"google_sheet"`, `"sqlite"` など) |
 | | `SPREADSHEET_NAME` | Googleスプレッドシートの名前 (google_sheet選択時) |
