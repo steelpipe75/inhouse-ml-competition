@@ -5,11 +5,12 @@ import hashlib
 from typing import Dict
 from zoneinfo import ZoneInfo
 
-from custom_settings import (
+from config import (
+    EMAIL_HASH_SALT,
     SAMPLE_SUBMISSION_FILE,
     SUBMISSION_ADDITIONAL_INFO,
-    score_submission,
     read_ground_truth,
+    score_submission,
     write_submission,
 )
 from config import (

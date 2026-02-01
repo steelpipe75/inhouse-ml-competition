@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 
-from custom_settings import DATA_DIR, PROBLEM_FILE
+from config import DATA_DIR, PROBLEM_FILE
 from utils import page_config, check_password
 
 page_config()

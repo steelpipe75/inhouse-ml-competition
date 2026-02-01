@@ -1,6 +1,6 @@
 import streamlit as st
 import os
-from custom_settings import HOME_CONTENT_FILE
+from config import HOME_CONTENT_FILE
 from utils import page_config, check_password
 
 page_config()

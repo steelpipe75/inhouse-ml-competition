@@ -1,12 +1,12 @@
 import streamlit as st
 import plotly.express as px
 
-from custom_settings import (
-    LEADERBOARD_SORT_ASCENDING,
-    LEADERBOARD_SHOW_LATEST_ONLY,
+from config import (
     AUTH,
-    read_leaderboard,
+    LEADERBOARD_SHOW_LATEST_ONLY,
+    LEADERBOARD_SORT_ASCENDING,
     filter_leaderboard,
+    read_leaderboard,
 )
 from config import (
     IS_COMPETITION_RUNNING,
