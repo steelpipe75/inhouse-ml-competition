@@ -1,6 +1,7 @@
 import streamlit as st
 import hashlib
 import hmac
+from PIL import Image
 
 from config import (
     PROTECT_ALL_PAGES,
@@ -26,9 +27,10 @@ def show_register_ground_truth_message() -> None:
 
 
 def page_config() -> None:
+    favicon = Image.open("favicon.ico")
     st.set_page_config(
         page_title=PAGE_TITLE,
-        page_icon=PAGE_ICON,
+        page_icon=favicon,
         layout="wide",
         initial_sidebar_state="expanded",
     )
