@@ -18,6 +18,7 @@ Streamlitを用いて、以下の機能を提供します。
 - `contents/` : Streamlitの各ページ（概要・投稿・リーダーボード）
 - `streamlit_app.py` : Streamlitアプリのメインファイル
 - `utils.py` : 共通関数ファイル
+- `data_store.py` : データストアの抽象化モジュール
 
 ### ユーザーがカスタマイズするファイル・フォルダ
 
