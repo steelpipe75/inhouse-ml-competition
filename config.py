@@ -64,8 +64,39 @@ GROUND_TRUTH_WORKSHEET_NAME = "ground_truth"  # 正解データ用のワーク�
 
 # Database specific settings
 DB_PATH = "db/competition.db"  # For SQLite
-# For MySQL/PostgreSQL, e.g., "postgresql+psycopg2://user:password@host:port/database"
-DB_URL = "postgresql+psycopg2://app_user:app_pass@localhost:5432/app_db"
+
+# DB_URL is constructed from st.secrets for security
+DB_URL = ""
+if DATA_STORE_TYPE in ["postgresql", "mysql"]:
+    try:
+        # st.secretsからデータベース接続情報を取得
+        conn_info = st.secrets["connections"][DATA_STORE_TYPE]
+        
+        # 完全なURLが設定されていればそれを使用
+        if "url" in conn_info and conn_info["url"]:
+            DB_URL = conn_info["url"]
+        # そうでなければ、各パーツからURLを組み立てる
+        else:
+            dialect = conn_info["dialect"]
+            driver = conn_info.get("driver")
+            username = conn_info["username"]
+            password = conn_info["password"]
+            host = conn_info["host"]
+            port = conn_info["port"]
+            database = conn_info["database"]
+            
+            if driver:
+                dialect_driver = f"{dialect}+{driver}"
+            else:
+                dialect_driver = dialect
+
+            DB_URL = f"{dialect_driver}://{username}:{password}@{host}:{port}/{database}"
+
+    except (FileNotFoundError, KeyError):
+        # Streamlit Community Cloud 環境以外でsecrets.tomlがない場合や、
+        # 必要なキーが設定されていない場合は、DB_URLは空文字列のままとなる
+        # scripts/register_ground_truth.py などは別途 secrets.toml を直接読み込む
+        pass
 
 # Database Table Names
 LEADERBOARD_TABLE_NAME = "leaderboard"

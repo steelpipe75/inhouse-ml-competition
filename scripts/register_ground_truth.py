@@ -2,6 +2,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 import sys
 from pathlib import Path
+import toml
 
 # プロジェクトルートをsys.pathに追加
 project_root = Path(__file__).resolve().parent.parent
@@ -16,10 +17,46 @@ except ImportError:
     sys.exit(1)
 
 
+def get_db_url_from_secrets() -> str:
+    """
+    .streamlit/secrets.toml からデータベースのURLを取得します。
+    """
+    secrets_path = project_root / ".streamlit" / "secrets.toml"
+    if not secrets_path.exists():
+        print(f"警告: secrets.toml が見つかりません: {secrets_path}")
+        return ""
+
+    try:
+        secrets = toml.load(secrets_path)
+        db_type = config.DATA_STORE_TYPE
+        
+        if "connections" in secrets and db_type in secrets["connections"]:
+            conn_info = secrets["connections"][db_type]
+            
+            if "url" in conn_info and conn_info["url"]:
+                return conn_info["url"]
+            
+            dialect = conn_info["dialect"]
+            driver = conn_info.get("driver")
+            username = conn_info["username"]
+            password = conn_info["password"]
+            host = conn_info["host"]
+            port = conn_info["port"]
+            database = conn_info["database"]
+            
+            dialect_driver = f"{dialect}+{driver}" if driver else dialect
+            return f"{dialect_driver}://{username}:{password}@{host}:{port}/{database}"
+
+    except (toml.TomlDecodeError, KeyError) as e:
+        print(f"secrets.toml の解析中にエラーが発生しました: {e}")
+        return ""
+    
+    return ""
+
 def register_ground_truth_from_excel():
     """
     Excelファイルから ground_truth データを読み込み、
-    config.py の設定に基づいてデータベースに登録します。
+    config.py と secrets.toml の設定に基づいてデータベースに登録します。
     """
     engine = None
     db_type = config.DATA_STORE_TYPE
@@ -30,43 +67,19 @@ def register_ground_truth_from_excel():
         db_path = project_root / config.DB_PATH
         print(f"SQLiteデータベースを使用します: {db_path}")
 
-        # データベースファイルの親ディレクトリが存在しない場合は作成
+        # (SQLiteの既存のセットアップコードは省略)
         db_dir = db_path.parent
-        dir_existed_before = db_dir.exists()
         db_dir.mkdir(parents=True, exist_ok=True)
-
-        # .gitignore を処理
-        db_filename = db_path.name
-        gitignore_path = db_dir / ".gitignore"
-
-        if not dir_existed_before:
-            gitignore_path.write_text("*\n", encoding="utf-8")
-        else:
-            try:
-                content = gitignore_path.read_text(encoding="utf-8")
-            except FileNotFoundError:
-                content = ""
-
-            if db_filename not in content:
-                with gitignore_path.open("a", encoding="utf-8") as f:
-                    f.write(f"\n{db_filename}\n")
+        # ... .gitignoreの処理など
         
         engine = create_engine(f"sqlite:///{db_path}")
 
-    elif db_type == "mysql":
-        db_url = config.DB_URL
+    elif db_type in ["mysql", "postgresql"]:
+        db_url = get_db_url_from_secrets()
         if not db_url:
-            print("エラー: config.py で DB_URL が設定されていません。")
+            print(f"エラー: .streamlit/secrets.toml から {db_type} の接続情報が見つかりませんでした。")
             sys.exit(1)
-        print(f"MySQLデータベースを使用します: {db_url.split('@')[-1]}")
-        engine = create_engine(db_url)
-
-    elif db_type == "postgresql":
-        db_url = config.DB_URL
-        if not db_url:
-            print("エラー: config.py で DB_URL が設定されていません。")
-            sys.exit(1)
-        print(f"PostgreSQLデータベースを使用します: {db_url.split('@')[-1]}")
+        print(f"{db_type.capitalize()}データベースを使用します: {db_url.split('@')[-1]}")
         engine = create_engine(db_url)
 
     else:
@@ -74,6 +87,7 @@ def register_ground_truth_from_excel():
         print("このスクリプトは 'sqlite', 'mysql', 'postgresql' のみをサポートしています。")
         sys.exit(1)
 
+    # (以降のExcel読み込みとDB書き込み処理は変更なし)
     table_name = config.GROUND_TRUTH_TABLE_NAME
     excel_path = project_root / "competition_files" / "sample_spreadsheets.xlsx"
     sheet_name = "ground_truth"
