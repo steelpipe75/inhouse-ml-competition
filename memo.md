@@ -88,6 +88,14 @@ sudo nano /etc/postgresql/*/main/pg_hba.conf
 
 保存して閉じる `Ctrl + O` → `Enter`（保存）、`Ctrl + X`（閉じる）
 
+```bash
+sudo service postgresql restart
+```
+
+```bash
+psql -U postgres
+```
+
 ```sql
 ALTER USER postgres
 WITH PASSWORD 'postgrespass';
