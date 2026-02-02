@@ -19,7 +19,7 @@
   },
   "updateContentCommand": "[ -f packages.txt ] && sudo apt update && sudo apt upgrade -y && sudo xargs apt install -y <packages.txt; [ -f requirements.txt ] && pip3 install --user uv; uv sync; echo '✅ Packages installed and Requirements met'",
   "postAttachCommand": {
-    "server": "uv run streamlit run Home.py --server.enableCORS false --server.enableXsrfProtection false --server.runOnSave true"
+    "server": "uv run streamlit run streamlit_app.py --server.enableCORS false --server.enableXsrfProtection false --server.runOnSave true"
   },
   "portsAttributes": {
     "8501": {
