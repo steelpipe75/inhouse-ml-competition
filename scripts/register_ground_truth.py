@@ -61,9 +61,17 @@ def register_ground_truth_from_excel():
         print(f"MySQLデータベースを使用します: {db_url.split('@')[-1]}")
         engine = create_engine(db_url)
 
+    elif db_type == "postgresql":
+        db_url = config.DB_URL
+        if not db_url:
+            print("エラー: config.py で DB_URL が設定されていません。")
+            sys.exit(1)
+        print(f"PostgreSQLデータベースを使用します: {db_url.split('@')[-1]}")
+        engine = create_engine(db_url)
+
     else:
         print(f"エラー: サポートされていないデータストアタイプです: {db_type}")
-        print("このスクリプトは 'sqlite' または 'mysql' のみをサポートしています。")
+        print("このスクリプトは 'sqlite', 'mysql', 'postgresql' のみをサポートしています。")
         sys.exit(1)
 
     table_name = config.GROUND_TRUTH_TABLE_NAME
