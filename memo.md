@@ -31,9 +31,9 @@ sudo mysql
 ```
 
 ```sql
-CREATE DATABASE competition_db;
-CREATE USER 'GitHubCodeSpaces'@'localhost' IDENTIFIED BY 'CodeSpaces';
-GRANT ALL PRIVILEGES ON competition_db.* TO 'GitHubCodeSpaces'@'localhost';
+CREATE DATABASE app_db;
+CREATE USER 'app_user'@'localhost' IDENTIFIED BY 'app_pass';
+GRANT ALL PRIVILEGES ON app_db.* TO 'app_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
