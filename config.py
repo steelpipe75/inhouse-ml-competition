@@ -55,7 +55,7 @@ IS_COMPETITION_RUNNING = (
 
 # --- Data Store Settings ---
 # データストアの種類を選択: "google_sheet", "sqlite", "mysql", "postgresql"
-DATA_STORE_TYPE = "google_sheet"
+DATA_STORE_TYPE = "mysql"
 
 # Google Sheets specific settings
 SPREADSHEET_NAME = "sample_spreadsheets"  # ここにスプレッドシート名を入力してください
@@ -64,7 +64,8 @@ GROUND_TRUTH_WORKSHEET_NAME = "ground_truth"  # 正解データ用のワーク�
 
 # Database specific settings
 DB_PATH = "db/competition.db"  # For SQLite
-DB_URL = ""  # For MySQL/PostgreSQL
+# For MySQL/PostgreSQL, e.g., "mysql+mysqlconnector://user:password@host:port/database"
+DB_URL = "mysql+mysqlconnector://GitHubCodeSpaces:CodeSpaces@127.0.0.1/competition_db"
 
 # Database Table Names
 LEADERBOARD_TABLE_NAME = "leaderboard"
