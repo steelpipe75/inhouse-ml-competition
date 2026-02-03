@@ -35,11 +35,13 @@ Streamlitを用いて、以下の機能を提供します。
 | :--- | :--- | :--- |
 | **基本設定** | `PAGE_TITLE` | アプリのタイトル |
 | | `IS_COMPETITION_RUNNING` | コンペ開催中かどうかのフラグ（`True`:開催中, `False`:終了後） |
-| **データストア** | `DATA_STORE_TYPE` | データストアの種類を選択 (`"google_sheet"`, `"sqlite"` など) |
-| | `SPREADSHEET_NAME` | Googleスプレッドシートの名前 (google_sheet選択時) |
-| | `LEADERBOARD_WORKSHEET_NAME`| リーダーボード用のワークシート名 (google_sheet選択時) |
-| | `GROUND_TRUTH_WORKSHEET_NAME`| 正解データ用のワークシート名 (google_sheet選択時) |
-| | `DB_PATH`, `DB_URL`| データベースのパスまたはURL (sqlite, mysql, postgresql選択時) |
+| **データストア** | `DATA_STORE_TYPE` | データストアの種類を選択 (`"google_sheet"`, `"sqlite"`, `"mysql"`, `"postgresql"`) |
+| | `SPREADSHEET_NAME` | Googleスプレッドシートの名前 (`google_sheet`選択時) |
+| | `LEADERBOARD_WORKSHEET_NAME`| リーダーボード用のワークシート名 (`google_sheet`選択時) |
+| | `GROUND_TRUTH_WORKSHEET_NAME`| 正解データ用のワークシート名 (`google_sheet`選択時) |
+| | `DB_PATH`| データベースファイルのパス (`sqlite`選択時) |
+| | `LEADERBOARD_TABLE_NAME` | リーダーボードのテーブル名 (`sqlite`, `mysql`, `postgresql`選択時) |
+| | `GROUND_TRUTH_TABLE_NAME` | 正解データのテーブル名 (`sqlite`, `mysql`, `postgresql`選択時) |
 | **ファイルパス**| `DATA_DIR` | データファイル（学習・テスト等）を格納するディレクトリ |
 | | `PROBLEM_FILE` | 問題説明Markdownファイルのパス |
 | | `SAMPLE_SUBMISSION_FILE`| サンプル提出ファイルのパス |
@@ -53,75 +55,153 @@ Streamlitを用いて、以下の機能を提供します。
 
 ## セットアップ方法
 
-1. 必要なパッケージのインストール
+### 1. 必要なパッケージのインストール
 
 ```bash
 pip install -r requirements.txt
 ```
 
-2. アプリの起動
+### 2. データストアの設定
 
-```bash
-streamlit run streamlit_app.py
-```
+本アプリケーションは、リーダーボードや正解データの保存先として、複数のデータストアに対応しています。  
+`config.py` の `DATA_STORE_TYPE` で使用するデータストアを選択し、それぞれの手順に従って設定を行ってください。
 
-3. Google Sheets API設定
+- **対応データストア:**
+  - `google_sheet` (デフォルト)
+  - `sqlite`
+  - `postgresql`
+  - `mysql`
 
-StreamlitアプリからGoogleスプレッドシートにアクセスするために、Google Cloud Platform (GCP) のサービスアカウント設定が必要です。
+---
 
-1.  **GCPでサービスアカウントを作成**
-    *   Google Cloud Consoleにアクセスし、新しいプロジェクトを作成するか、既存のプロジェクトを選択します。
-    *   「APIとサービス」>「ライブラリ」から「Google Sheets API」と「Google Drive API」を検索し、有効にします。
-    *   「IAMと管理」>「サービスアカウント」に移動し、新しいサービスアカウントを作成します。
-    *   サービスアカウント作成時に「キーを作成」を選択し、「JSON」形式でキーファイルをダウンロードします。このファイルには、スプレッドシートへのアクセスに必要な認証情報が含まれています。
+#### A. Google Sheets を使用する場合 (`DATA_STORE_TYPE = "google_sheet"`)
 
-2.  **.streamlit/secrets.tomlの設定**
-    *   ダウンロードしたJSONキーファイルの内容を、`.streamlit/secrets.toml`ファイルに記述します。
-    *   プロジェクトルートに `.streamlit` ディレクトリがない場合は作成します。
-    *   `.streamlit/secrets.toml.example`を参考に、JSONキーの内容を`[gcp_service_account]`セクションにペーストします。特に`private_key`の値は、JSONファイル内の `private_key` の値をそのままコピー＆ペーストしてください（改行コードなども含めて）。
+1.  **`config.py` の設定**
+    - `DATA_STORE_TYPE` が `"google_sheet"` になっていることを確認します。
+    - `SPREADSHEET_NAME`, `LEADERBOARD_WORKSHEET_NAME`, `GROUND_TRUTH_WORKSHEET_NAME` に、使用するGoogleスプレッドシートの情報を設定します。
 
-    *   **APP_PASSWORD_HASHの設定**
-        アプリへのアクセスを制限したい場合、`APP_PASSWORD_HASH`を設定します。`generate_hash.py`スクリプトを使用してパスワードのハッシュ値を生成し、`.streamlit/secrets.toml`に記述してください。
+2.  **Google Cloud Platform (GCP) の設定**
+    - Google Cloud Consoleでプロジェクトを作成または選択します。
+    - 「APIとサービス」>「ライブラリ」から「Google Sheets API」と「Google Drive API」を有効にします。
+    - 「IAMと管理」>「サービスアカウント」で新しいサービスアカウントを作成し、キー（JSON形式）をダウンロードします。
 
-        ```toml
-        APP_PASSWORD_HASH = "生成されたハッシュ値"
-        ```
+3.  **`.streamlit/secrets.toml` の設定**
+    - プロジェクトルートに `.streamlit` ディレクトリを作成し、その中に `secrets.toml` ファイルを置きます。
+    - `.streamlit/secrets.toml.example` を参考に、ダウンロードしたJSONキーファイルの内容を `[gcp_service_account]` セクションにコピー＆ペーストします。
 
-    **secrets.tomlの例:**
     ```toml
-    AUTH = false # true : OIDC認証を使う / false : OIDC認証なし
-    APP_PASSWORD_HASH = "your_sha256_hashed_password_here" # 設定しない場合は合言葉保護なし(AUTH = false の時のみ有効)
-    EMAIL_HASH_SALT = "your_email_hash_salt_string_here" # メールアドレスハッシュ化のためのsalt
-    
+    # .streamlit/secrets.toml
+
     [gcp_service_account]
     type = "service_account"
     project_id = "your-project-id"
     private_key_id = "your-private-key-id"
-    private_key = "-----BEGIN PRIVATE KEY-----\n...your-private-key...\n-----END PRIVATE KEY-----\n" # JSONキーファイルからコピー
+    private_key = "-----BEGIN PRIVATE KEY-----\n...your-private-key...\n-----END PRIVATE KEY-----\n"
     client_email = "your-client-email"
-    client_id = "your-client-id"
-    auth_uri = "https://accounts.google.com/o/oauth2/auth"
-    token_uri = "https://oauth2.googleapis.com/token"
-    auth_provider_x509_cert_url = "https://www.googleapis.com/oauth2/v1/certs"
-    client_x509_cert_url = "your-client-x509-cert-url"
-    universe_domain = "googleapis.com"
-    
-    [auth]
-    redirect_uri = "your-redirect-uri"
-    cookie_secret = "your-cookie-secret"
-    client_id = "your-client-id"
-    client_secret = "your-client-secret"
-    server_metadata_url = "your-server-metadata-url"
+    # ... 以下、JSONファイルの内容をコピー
     ```
 
-    *   **認証設定 (`AUTH`, `EMAIL_HASH_SALT`, `[auth]`)**
-        *   `AUTH`: OIDC認証を有効にするかどうかを設定します。`true`に設定するとOIDC認証を使用し、`false`の場合は使用しません。
-        *   `EMAIL_HASH_SALT`: ユーザーのメールアドレスをハッシュ化する際に使用するソルト文字列です。
-        *   `[auth]`: OIDC認証に関連する設定を定義します。`redirect_uri`、`cookie_secret`、`client_id`、`client_secret`、`server_metadata_url`など、OIDCプロバイダーから提供される情報を設定してください。
+4.  **Googleスプレッドシートの共有設定**
+    - 使用するGoogleスプレッドシートの「共有」設定を開き、サービスアカウントのメールアドレス（`secrets.toml` の `client_email`）を「編集者」として追加します。
 
-3.  **Googleスプレッドシートの共有設定**
-    *   コンペで使用するGoogleスプレッドシートを開きます。
-    *   スプレッドシートの「共有」設定を開き、サービスアカウントのメールアドレス（`client_email`の値）を「編集者」として追加します。
+---
+
+#### B. SQLite を使用する場合 (`DATA_STORE_TYPE = "sqlite"`)
+
+1.  **`config.py` の設定**
+    - `DATA_STORE_TYPE` を `"sqlite"` に変更します。
+    - `DB_PATH` にデータベースファイルのパスを指定します。（例: `"db/competition.db"`）
+    - `LEADERBOARD_TABLE_NAME` と `GROUND_TRUTH_TABLE_NAME` に、使用するテーブル名を設定します。
+
+SQLiteを使用する場合、`.streamlit/secrets.toml` での追加設定は不要です。
+指定したパスにデータベースファイルが自動的に作成されます。
+
+---
+
+#### C. PostgreSQL / MySQL を使用する場合
+
+1.  **`config.py` の設定**
+    - `DATA_STORE_TYPE` を `"postgresql"` または `"mysql"` に変更します。
+    - `LEADERBOARD_TABLE_NAME` と `GROUND_TRUTH_TABLE_NAME` に、使用するテーブル名を設定します。
+
+2.  **`.streamlit/secrets.toml` の設定**
+    - `.streamlit/secrets.toml.example` を参考に、データベースの接続情報を `secrets.toml` に記述します。
+    - データベースの種類に応じて、`[connections.postgresql]` または `[connections.mysql]` セクションを作成し、認証情報を設定してください。
+
+    **PostgreSQL の例:**
+    ```toml
+    # .streamlit/secrets.toml
+
+    [connections.postgresql]
+    dialect = "postgresql"
+    driver = "psycopg2"
+    username = "your_user"
+    password = "your_password"
+    host = "your_host"
+    port = 5432
+    database = "your_database"
+    # url = "postgresql+psycopg2://user:pass@host:port/dbname" # もしくはURLを直接指定
+    ```
+
+    **MySQL の例:**
+    ```toml
+    # .streamlit/secrets.toml
+
+    [connections.mysql]
+    dialect = "mysql"
+    driver = "mysqlconnector"
+    username = "your_user"
+    password = "your_password"
+    host = "your_host"
+    port = 3306
+    database = "your_database"
+    # url = "mysql+mysqlconnector://user:pass@host:port/dbname" # もしくはURLを直接指定
+    ```
+事前にデータベースとテーブルを作成しておく必要があります。
+
+### 3. 認証の設定 (任意)
+
+アプリケーションにアクセス制限をかけることができます。
+
+#### パスワード保護
+
+`config.py` の `AUTH` を `False` に設定した場合、単純なパスワード保護を利用できます。
+以下のコマンドでパスワードのハッシュ値を生成し、`.streamlit/secrets.toml` の `APP_PASSWORD_HASH` に設定してください。
+
+```bash
+python scripts/generate_password_hash.py
+```
+
+```toml
+# .streamlit/secrets.toml
+APP_PASSWORD_HASH = "生成されたハッシュ値"
+EMAIL_HASH_SALT = "your_email_hash_salt_string_here"
+```
+`EMAIL_HASH_SALT` には、リーダーボードでメールアドレスを匿名化するための任意の文字列を設定します。
+
+#### OIDC認証
+
+`config.py` の `AUTH` を `True` に設定した場合、OIDCによる認証を利用できます。
+`.streamlit/secrets.toml` にOIDCプロバイダーの情報を設定してください。
+
+```toml
+# .streamlit/secrets.toml
+AUTH = true
+EMAIL_HASH_SALT = "your_email_hash_salt_string_here"
+
+[auth]
+redirect_uri = "your-redirect-uri"
+cookie_secret = "your-cookie-secret"
+client_id = "your-client-id"
+client_secret = "your-client-secret"
+server_metadata_url = "your-server-metadata-url"
+```
+
+### 4. アプリの起動
+
+```bash
+streamlit run streamlit_app.py
+```
 
 ## 使い方
 
