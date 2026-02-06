@@ -26,35 +26,35 @@ def playground() -> None:
 
     select_playground = st.segmented_control(
         "select type",
-        ["JupyterLite", "marimo", "Colab"],
+        [":material/dynamic_form: JupyterLite", ":material/flowsheet: marimo", ":material/code_blocks: Colab"],
         selection_mode="single",
-        default="JupyterLite"
+        default=":material/dynamic_form: JupyterLite"
     )
 
-    if select_playground == "JupyterLite":
+    if select_playground == ":material/dynamic_form: JupyterLite":
         components.iframe(
             src=PLAYGROUND_PAGE_URL_JUPYTERLITE,
             width=data["innerWidth"],
             height=iframe_height,
         )
         st.link_button(
-            "JupyterLite サンプルスクリプトを別タブで開く",
+            ":material/dynamic_form: JupyterLite サンプルスクリプトを別タブで開く",
             url=PLAYGROUND_PAGE_URL_JUPYTERLITE,
         )
-    elif select_playground == "marimo":
+    elif select_playground == ":material/flowsheet: marimo":
         components.iframe(
             src=PLAYGROUND_PAGE_URL_MARIMO,
             width=data["innerWidth"],
             height=iframe_height,
         )
         st.link_button(
-            "marimo サンプルスクリプトを別タブで開く",
+            ":material/flowsheet: marimo サンプルスクリプトを別タブで開く",
             url=PLAYGROUND_PAGE_URL_MARIMO,
         )
     else:
-        st.write("Colabのサンプルスクリプトはiframeで表示できないため、以下のリンクからColabを開いてください。")
+        st.write(":material/code_blocks: Colabのサンプルスクリプトはiframeで表示できないため、以下のリンクからColabを開いてください。")
         st.link_button(
-            "Colab サンプルスクリプトを別タブで開く",
+            ":material/code_blocks: Colab サンプルスクリプトを別タブで開く",
             url=PLAYGROUND_PAGE_URL_COLAB,
         )
 
