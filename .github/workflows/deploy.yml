@@ -16,26 +16,26 @@ jobs:
           uv venv
       - name: Install the dependencies
         run: |
-          uv pip install -r ./competition_files/playgroubd/JupyterLite/requirements.txt
+          uv pip install -r ./competition_files/playground/JupyterLite/requirements.txt
       - name: Build the JupyterLite site
         run: |
-          mkdir -p ./competition_files/playgroubd/JupyterLite/content/data
-          cp -r ./competition_files/data ./competition_files/playgroubd/JupyterLite/content/data
-          uv run jupyter lite build --contents ./competition_files/playgroubd/JupyterLite/content --output-dir ./dist/JupyterLite -y
+          mkdir -p ./competition_files/playground/JupyterLite/content/data
+          cp -r ./competition_files/data ./competition_files/playground/JupyterLite/content/data
+          uv run jupyter lite build --contents ./competition_files/playground/JupyterLite/content --output-dir ./dist/JupyterLite -y
       - name: Install marimo
         run: |
           uv pip install marimo
       - name: Build marimo
         run: |
-          mkdir -p ./competition_files/playgroubd/marimo/public/data
-          cp -r ./competition_files/data ./competition_files/playgroubd/marimo/public/data
-          uv run marimo export html-wasm --sandbox --mode edit ./competition_files/playgroubd/marimo/sample.py -o ./dist/marimo -f
+          mkdir -p ./competition_files/playground/marimo/public/data
+          cp -r ./competition_files/data ./competition_files/playground/marimo/public/data
+          uv run marimo export html-wasm --sandbox --mode edit ./competition_files/playground/marimo/sample.py -o ./dist/marimo -f
       - name: Convert markdown
         run: |
-          uv run ./competition_files/playgroubd/index_md_convert.py ./competition_files/playgroubd/index.md ./dist/index.html
+          uv run ./competition_files/playground/index_md_convert.py ./competition_files/playground/index.md ./dist/index.html
       - name: Copy file
         run: |
-          cp  ./competition_files/playgroubd/.nojekyll ./dist
+          cp  ./competition_files/playground/.nojekyll ./dist
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
