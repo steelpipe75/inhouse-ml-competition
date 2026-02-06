@@ -7,7 +7,7 @@
 
 ---
 
-### :material/code_blocks: サンプル
+### :material/edit_document: サンプル
 
 - ここにお知らせやルールなどを自由に記載できます。
 - Markdown記法が使えます。
