@@ -49,8 +49,13 @@ def show_leaderboard() -> None:
                     "submission_time", ascending=False
                 ).drop_duplicates(subset=[user_col], keep="first")
 
+        PUBLIC_TAB_STR = ":material/public: Public"
+        PRIVATE_TAB_STR = ":material/social_leaderboard: Private"
+
+        default_tab = PUBLIC_TAB_STR if IS_COMPETITION_RUNNING else PRIVATE_TAB_STR
         public_tab, private_tab = st.tabs(
-            [":material/public: Public", ":material/social_leaderboard: Private"]
+            [PUBLIC_TAB_STR, PRIVATE_TAB_STR],
+            default=default_tab
         )
 
         with public_tab:
