@@ -31,6 +31,9 @@ jobs:
           cp -r ./competition_files/data ./competition_files/playground/marimo/public/data
           uv run marimo export html-wasm --sandbox --mode edit ./competition_files/playground/marimo/sample.py -o ./dist/marimo -f
       - name: Convert markdown
+        env:
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          GITHUB_REPOSITORY_NAME: ${{ github.event.repository.name }}
         run: |
           uv run ./competition_files/playground/index_md_convert.py ./competition_files/playground/index.md ./dist/index.html
       - name: Copy file
