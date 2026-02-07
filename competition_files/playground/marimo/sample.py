@@ -1,18 +1,25 @@
 # /// script
 # requires-python = ">=3.13"
 # dependencies = [
-#     "marimo>=0.19.7",
+#     "marimo>=0.19.0",
+#     "matplotlib==3.10.8",
+#     "numpy==2.4.2",
+#     "polars==1.38.1",
+#     "pyzmq>=27.1.0",
+#     "scikit-learn==1.8.0",
 # ]
 # ///
+
 import marimo
 
-__generated_with = "0.19.7"
+__generated_with = "0.19.9"
 app = marimo.App(width="full")
 
 
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
@@ -35,6 +42,7 @@ def _(mo):
 @app.cell
 def _():
     import micropip
+
     return (micropip,)
 
 
@@ -44,7 +52,7 @@ async def _(micropip):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     ## ライブラリをインポート
@@ -60,6 +68,7 @@ def _():
     from sklearn.linear_model import LinearRegression as LR
     from matplotlib import pyplot as plt
     from sklearn.metrics import mean_squared_error as MSE
+
     return LR, np, pl, plt, train_test_split
 
 
