@@ -31,24 +31,38 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## polarsをインストール
+    ## WASM環境であればpolarsをインストール
     """)
     return
 
 
 @app.cell
 def _():
-    import micropip
+    import sys
 
+    return (sys,)
+
+
+@app.cell
+def _(sys):
+    IS_WASM = sys.platform == "emscripten"
+    return (IS_WASM,)
+
+
+@app.cell
+def _(IS_WASM):
+    if IS_WASM:
+        import micropip
     return (micropip,)
 
 
 @app.cell
-async def _(micropip):
-    await micropip.install("polars")
+async def _(IS_WASM, micropip):
+    if IS_WASM:
+        await micropip.install("polars")
     return
 
 
