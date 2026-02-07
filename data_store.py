@@ -214,7 +214,7 @@ class BaseDBDataStore(DataStore):
                     is_pk = h.lower() == "id"
                     # ground_truthのidは整数とは限らないため、Text型を主キーにする
                     columns.append(
-                        sqlalchemy.Column(h, sqlalchemy.Text, primary_key=is_pk)
+                        sqlalchemy.Column(h, sqlalchemy.String(255), primary_key=is_pk)
                     )
             else:
                 # leaderboardテーブルなどの場合
