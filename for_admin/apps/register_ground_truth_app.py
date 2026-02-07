@@ -19,38 +19,58 @@ except ImportError as e:
 st.set_page_config(page_title="正解データ登録アプリ", layout="wide")
 st.title("正解データ登録アプリ")
 
-st.write("このアプリでは、`competition_files/sample_spreadsheets.xlsx`から`ground_truth`シートのデータを読み込み、データストアに登録します。")
+st.write("正解データファイルをアップロードし、データストアに登録します。")
 
-excel_path = project_root / "competition_files" / "sample_spreadsheets.xlsx"
-sheet_name = "ground_truth"
+uploaded_file = st.file_uploader("正解データファイルをアップロードしてください（.csv または .xlsx）", type=["csv", "xlsx"])
 
-if st.button("正解データを登録"):
-    st.info(f"データストアタイプ: {config.DATA_STORE_TYPE}")
-    st.info(f"Excelファイル '{excel_path}' から '{sheet_name}' シートを読み込んでいます...")
+df = None
+selected_sheet_name = None
 
-    try:
-        if not excel_path.exists():
-            st.error(f"エラー: Excelファイルが見つかりません: {excel_path}")
-            st.stop()
+if uploaded_file is not None:
+    file_extension = Path(uploaded_file.name).suffix
 
-        df = pd.read_excel(excel_path, sheet_name=sheet_name)
-        st.success(f"Excelファイルから {len(df)} 件のデータを正常に読み込みました。")
-        st.dataframe(df.head()) # 読み込んだデータの一部を表示
+    if file_extension == ".csv":
+        try:
+            df = pd.read_csv(uploaded_file)
+            st.success("CSVファイルを正常に読み込みました。")
+        except Exception as e:
+            st.error(f"CSVファイルの読み込み中にエラーが発生しました: {e}")
+    elif file_extension == ".xlsx":
+        try:
+            excel_file = pd.ExcelFile(uploaded_file)
+            sheet_names = excel_file.sheet_names
+            if sheet_names:
+                selected_sheet_name = st.selectbox("使用するシートを選択してください", sheet_names)
+                if selected_sheet_name:
+                    df = excel_file.parse(selected_sheet_name)
+                    st.success(f"Excelファイルからシート '{selected_sheet_name}' を正常に読み込みました。")
+            else:
+                st.warning("Excelファイルにシートが見つかりませんでした。")
+        except Exception as e:
+            st.error(f"Excelファイルの読み込み中にエラーが発生しました: {e}")
+    else:
+        st.error("サポートされていないファイル形式です。CSVまたはXLSXファイルをアップロードしてください。")
 
+# df が存在する場合のみプレビューと登録ボタンを表示
+if df is not None and not df.empty:
+    st.subheader("アップロードされたデータのプレビュー")
+    st.dataframe(df)
+
+    if st.button("プレビューしたデータを登録"):
+        st.info(f"データストアタイプ: {config.DATA_STORE_TYPE}")
         st.info(f"'{config.GROUND_TRUTH_TABLE_NAME}' または '{config.GROUND_TRUTH_WORKSHEET_NAME}' にデータを登録します...")
 
-        data_store = get_data_store()
-        data_store.write_ground_truth(df, config.GROUND_TRUTH_HEADER)
-        st.success(f"正解データの登録が完了しました。データストアに {len(df)} 件のデータが登録されました。")
-
-    except ValueError as ve:
-        if "Worksheet" in str(ve) and "not found" in str(ve):
-            st.error(f"エラー: Excelファイルに '{sheet_name}' シートが見つかりません。")
-        else:
-            st.error(f"Excelファイルの読み込み中にエラーが発生しました: {ve}")
-    except Exception as e:
-        st.error(f"データストアへの書き込み中にエラーが発生しました: {e}")
-        st.error(f"データストアの設定またはデータ形式に問題がある可能性があります。")
+        try:
+            data_store = get_data_store()
+            data_store.write_ground_truth(df, config.GROUND_TRUTH_HEADER)
+            st.success(f"正解データの登録が完了しました。データストアに {len(df)} 件のデータが登録されました。")
+        except Exception as e:
+            st.error(f"データストアへの書き込み中にエラーが発生しました: {e}")
+            st.error(f"データストアの設定またはデータ形式に問題がある可能性があります。")
+elif uploaded_file is not None and (df is None or df.empty):
+    st.warning("読み込むデータがありません、またはデータが空です。")
+else:
+    st.info("ファイルをアップロードしてください。")
 
 st.markdown("---")
 st.write("注意事項: この操作は、既存の正解データを上書きする可能性があります。")
