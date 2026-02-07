@@ -5,6 +5,8 @@ import pandas as pd
 import os
 
 from data_store import get_data_store
+
+
 # --- App Navigation ---
 def _get_NAVIGATION_PAGES():
     return [
@@ -20,14 +22,18 @@ def _get_NAVIGATION_PAGES():
         ),
     ]
 
+
 def get_APP_NAVIGATION_PAGES():
     APP_NAVIGATION_PAGES = _get_NAVIGATION_PAGES() + [
-            st.Page(
-                "competition_files/contents/playground.py", title="playground", icon=":material/terminal:"
-            ),
-        ]
+        st.Page(
+            "competition_files/contents/playground.py",
+            title="playground",
+            icon=":material/terminal:",
+        ),
+    ]
 
     return APP_NAVIGATION_PAGES
+
 
 # --- Page Settings ---
 PAGE_TITLE = "内輪向け機械学習コンペアプリ"
@@ -74,7 +80,7 @@ if DATA_STORE_TYPE in ["postgresql", "mysql"]:
     try:
         # st.secretsからデータベース接続情報を取得
         conn_info = st.secrets["connections"][DATA_STORE_TYPE]
-        
+
         # 完全なURLが設定されていればそれを使用
         if "url" in conn_info and conn_info["url"]:
             DB_URL = conn_info["url"]
@@ -87,13 +93,15 @@ if DATA_STORE_TYPE in ["postgresql", "mysql"]:
             host = conn_info["host"]
             port = conn_info["port"]
             database = conn_info["database"]
-            
+
             if driver:
                 dialect_driver = f"{dialect}+{driver}"
             else:
                 dialect_driver = dialect
 
-            DB_URL = f"{dialect_driver}://{username}:{password}@{host}:{port}/{database}"
+            DB_URL = (
+                f"{dialect_driver}://{username}:{password}@{host}:{port}/{database}"
+            )
 
     except (FileNotFoundError, KeyError):
         # Streamlit Community Cloud 環境以外でsecrets.tomlがない場合や、

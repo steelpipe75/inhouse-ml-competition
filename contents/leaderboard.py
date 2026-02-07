@@ -54,8 +54,7 @@ def show_leaderboard() -> None:
 
         default_tab = PUBLIC_TAB_STR if IS_COMPETITION_RUNNING else PRIVATE_TAB_STR
         public_tab, private_tab = st.tabs(
-            [PUBLIC_TAB_STR, PRIVATE_TAB_STR],
-            default=default_tab
+            [PUBLIC_TAB_STR, PRIVATE_TAB_STR], default=default_tab
         )
 
         with public_tab:

@@ -148,7 +148,9 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    submit_csv_path = mo.notebook_location() / "public" / "data" / "sample_submission.csv"
+    submit_csv_path = (
+        mo.notebook_location() / "public" / "data" / "sample_submission.csv"
+    )
     submit_csv_path
     return (submit_csv_path,)
 
@@ -348,9 +350,7 @@ def _(mo):
 
 @app.cell
 def _(pl, submit, y_pred_test):
-    my_submit = submit.with_columns(
-        pl.Series("target", y_pred_test)
-    )
+    my_submit = submit.with_columns(pl.Series("target", y_pred_test))
     return (my_submit,)
 
 

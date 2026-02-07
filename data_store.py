@@ -150,7 +150,14 @@ class GoogleSheetDataStore(DataStore):
     def write_ground_truth(self, df: pd.DataFrame, header: List[str]):
         worksheet = self._get_worksheet(self.ground_truth_worksheet_name, header=header)
         # 既存データを上書きする
-        set_with_dataframe(worksheet, df.reindex(columns=header), row=1, col=1, include_column_header=True, resize=True)
+        set_with_dataframe(
+            worksheet,
+            df.reindex(columns=header),
+            row=1,
+            col=1,
+            include_column_header=True,
+            resize=True,
+        )
 
 
 class BaseDBDataStore(DataStore):

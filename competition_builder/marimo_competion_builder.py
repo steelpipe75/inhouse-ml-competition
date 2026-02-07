@@ -69,7 +69,9 @@ def _(X_df, pd, y_df):
 
 @app.cell
 def _(data_df, np, train_test_split):
-    train_df, test_df = train_test_split(data_df, test_size=0.1, random_state=42, shuffle=True)
+    train_df, test_df = train_test_split(
+        data_df, test_size=0.1, random_state=42, shuffle=True
+    )
     train_df["id"] = range(len(train_df))
     test_df["id"] = range(len(train_df), len(train_df) + len(test_df))
     train_df = train_df[["id", "feature_0", "target"]]

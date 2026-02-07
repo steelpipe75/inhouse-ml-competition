@@ -6,8 +6,10 @@ import getpass
 import os
 import toml
 
+
 def generate_password_hash(password):
     return hashlib.sha256(password.encode()).hexdigest()
+
 
 if __name__ == "__main__":
     # ユーザーにパスワードの入力を促す
@@ -37,4 +39,6 @@ if __name__ == "__main__":
     with open(streamlit_secrets_path, "w", encoding="utf-8") as f:
         toml.dump(secrets, f)
 
-    print(f"\n生成されたパスワードハッシュを {streamlit_secrets_path} に書き込みました。")
+    print(
+        f"\n生成されたパスワードハッシュを {streamlit_secrets_path} に書き込みました。"
+    )

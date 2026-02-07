@@ -29,11 +29,17 @@ try:
     if repo_owner and repo_name:
         colab_base_url = "https://colab.research.google.com/github/"
         colab_path = "competition_files/playground/Colab/sample.ipynb"
-        dynamic_colab_link = f"{colab_base_url}{repo_owner}/{repo_name}/blob/main/{colab_path}"
-        markdown_content = markdown_content.replace("COLAB_LINK_PLACEHOLDER", dynamic_colab_link)
+        dynamic_colab_link = (
+            f"{colab_base_url}{repo_owner}/{repo_name}/blob/main/{colab_path}"
+        )
+        markdown_content = markdown_content.replace(
+            "COLAB_LINK_PLACEHOLDER", dynamic_colab_link
+        )
     else:
-        print("Warning: GITHUB_REPOSITORY_OWNER or GITHUB_REPOSITORY_NAME not found in environment variables. Colab link might be incorrect.", file=sys.stderr)
-
+        print(
+            "Warning: GITHUB_REPOSITORY_OWNER or GITHUB_REPOSITORY_NAME not found in environment variables. Colab link might be incorrect.",
+            file=sys.stderr,
+        )
 
     html_content = md.convert(markdown_content)
 

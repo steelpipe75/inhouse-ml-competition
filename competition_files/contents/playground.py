@@ -5,8 +5,12 @@ from st_screen_stats import ScreenData
 from utils import page_config, check_password
 
 # --- Playground Page Settings ---
-PLAYGROUND_PAGE_URL_JUPYTERLITE = "https://steelpipe75.github.io/inhouse-ml-competition/JupyterLite/"
-PLAYGROUND_PAGE_URL_MARIMO = "https://steelpipe75.github.io/inhouse-ml-competition/marimo/"
+PLAYGROUND_PAGE_URL_JUPYTERLITE = (
+    "https://steelpipe75.github.io/inhouse-ml-competition/JupyterLite/"
+)
+PLAYGROUND_PAGE_URL_MARIMO = (
+    "https://steelpipe75.github.io/inhouse-ml-competition/marimo/"
+)
 PLAYGROUND_PAGE_URL_COLAB = "https://colab.research.google.com/github/steelpipe75/inhouse-ml-competition/blob/main/competition_files/playground/Colab/sample.ipynb"
 
 page_config()
@@ -26,9 +30,13 @@ def playground() -> None:
 
     select_playground = st.segmented_control(
         "select type",
-        [":material/dynamic_form: JupyterLite", ":material/flowsheet: marimo", ":material/code_blocks: Colab"],
+        [
+            ":material/dynamic_form: JupyterLite",
+            ":material/flowsheet: marimo",
+            ":material/code_blocks: Colab",
+        ],
         selection_mode="single",
-        default=":material/dynamic_form: JupyterLite"
+        default=":material/dynamic_form: JupyterLite",
     )
 
     if select_playground == ":material/dynamic_form: JupyterLite":
@@ -52,7 +60,9 @@ def playground() -> None:
             url=PLAYGROUND_PAGE_URL_MARIMO,
         )
     else:
-        st.write(":material/code_blocks: Colabのサンプルスクリプトはiframeで表示できないため、以下のリンクからColabを開いてください。")
+        st.write(
+            ":material/code_blocks: Colabのサンプルスクリプトはiframeで表示できないため、以下のリンクからColabを開いてください。"
+        )
         st.link_button(
             ":material/code_blocks: Colab サンプルスクリプトを別タブで開く",
             url=PLAYGROUND_PAGE_URL_COLAB,
