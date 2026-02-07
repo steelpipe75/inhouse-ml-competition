@@ -58,7 +58,7 @@ IS_COMPETITION_RUNNING = (
 
 # --- Data Store Settings ---
 # データストアの種類を選択: "google_sheet", "sqlite", "mysql", "postgresql"
-DATA_STORE_TYPE = "postgresql"
+DATA_STORE_TYPE = "google_sheet"
 
 # Google Sheets specific settings
 SPREADSHEET_NAME = "sample_spreadsheets"  # ここにスプレッドシート名を入力してください
