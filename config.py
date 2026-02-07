@@ -6,25 +6,28 @@ import os
 
 from data_store import get_data_store
 # --- App Navigation ---
-NAVIGATION_PAGES = [
-    st.Page("contents/home.py", title="Home", icon=":material/home:"),
-    st.Page(
-        "contents/problem.py", title="概要・データ", icon=":material/menu_book:"
-    ),
-    st.Page("contents/submit.py", title="予測結果の投稿", icon=":material/send:"),
-    st.Page(
-        "contents/leaderboard.py",
-        title="リーダーボード",
-        icon=":material/leaderboard:",
-    ),
-]
+def _get_NAVIGATION_PAGES():
+    return [
+        st.Page("contents/home.py", title="Home", icon=":material/home:"),
+        st.Page(
+            "contents/problem.py", title="概要・データ", icon=":material/menu_book:"
+        ),
+        st.Page("contents/submit.py", title="予測結果の投稿", icon=":material/send:"),
+        st.Page(
+            "contents/leaderboard.py",
+            title="リーダーボード",
+            icon=":material/leaderboard:",
+        ),
+    ]
 
-APP_NAVIGATION_PAGES = NAVIGATION_PAGES + [
-    st.Page(
-        "competition_files/contents/playground.py", title="playground", icon=":material/terminal:"
-    ),
-]
+def get_APP_NAVIGATION_PAGES():
+    APP_NAVIGATION_PAGES = _get_NAVIGATION_PAGES() + [
+            st.Page(
+                "competition_files/contents/playground.py", title="playground", icon=":material/terminal:"
+            ),
+        ]
 
+    return APP_NAVIGATION_PAGES
 
 # --- Page Settings ---
 PAGE_TITLE = "内輪向け機械学習コンペアプリ"
@@ -218,11 +221,3 @@ def filter_leaderboard(leaderboard_df: pd.DataFrame) -> pd.DataFrame:
         df["submission_time"] = df["submission_time"].dt.tz_convert("Asia/Tokyo")
 
     return df
-
-
-# --- App Navigation ---
-APP_NAVIGATION_PAGES = NAVIGATION_PAGES + [
-    st.Page(
-        "competition_files/contents/playground.py", title="playground", icon=":material/terminal:"
-    ),
-]
