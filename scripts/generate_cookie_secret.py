@@ -21,7 +21,7 @@ if __name__ == "__main__":
     else:
         secrets = {}
 
-    # [streamlit]セクションが存在しない場合は作成
+    # [auth]セクションが存在しない場合は作成
     if "auth" not in secrets:
         secrets["auth"] = {}
 

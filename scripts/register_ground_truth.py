@@ -1,7 +1,6 @@
 import pandas as pd
 import sys
 from pathlib import Path
-# import toml # tomlは不要になるため削除
 
 # プロジェクトルートをsys.pathに追加
 project_root = Path(__file__).resolve().parent.parent
@@ -15,9 +14,6 @@ except ImportError as e:
     print("このスクリプトはプロジェクトのルートディレクトリから実行するか、")
     print("プロジェクトルートが sys.path に含まれている必要があります。")
     sys.exit(1)
-
-
-# get_db_url_from_secrets 関数は不要になるため削除
 
 
 def register_ground_truth_from_excel():

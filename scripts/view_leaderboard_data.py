@@ -46,4 +46,3 @@ def view_leaderboard_data():
 
 if __name__ == "__main__":
     view_leaderboard_data()
-
