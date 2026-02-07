@@ -1,5 +1,4 @@
 import pandas as pd
-import sqlite3
 import sys
 from pathlib import Path
 
@@ -9,8 +8,9 @@ sys.path.append(str(project_root))
 
 try:
     import config
-except ImportError:
-    print("エラー: config.py が見つかりません。")
+    from data_store import get_data_store
+except ImportError as e:
+    print(f"エラー: 必要なモジュールが見つかりません。{e}")
     print("このスクリプトはプロジェクトのルートディレクトリから実行するか、")
     print("プロジェクトルートが sys.path に含まれている必要があります。")
     sys.exit(1)
@@ -18,24 +18,16 @@ except ImportError:
 
 def view_leaderboard_data():
     """
-    SQLiteデータベースからリーダーボードデータを読み込み、表示します。
+    設定されたデータストアからリーダーボードデータを読み込み、表示します。
     """
-    db_path = project_root / config.DB_PATH
-    table_name = config.LEADERBOARD_TABLE_NAME
-
-    if not db_path.exists():
-        print(f"エラー: データベースファイルが見つかりません: {db_path}")
-        print("リーダーボードデータがまだ登録されていない可能性があります。")
-        return
-
-    print(f"'{db_path}' から '{table_name}' テーブルのデータを読み込んでいます...")
+    print(f"'{config.DATA_STORE_TYPE}' データストアからリーダーボードデータを読み込んでいます...")
 
     try:
-        with sqlite3.connect(db_path) as conn:
-            df = pd.read_sql_query(f"SELECT * FROM {table_name}", conn)
+        data_store = get_data_store()
+        df = data_store.read_leaderboard(config.LEADERBOARD_HEADER)
 
         if df.empty:
-            print(f"'{table_name}' テーブルにデータがありません。")
+            print(f"リーダーボードにデータがありません。")
         else:
             print("\n--- リーダーボードデータ ---")
             # デフォルトの表示制限を解除して、全ての行と列を表示
@@ -45,14 +37,13 @@ def view_leaderboard_data():
                 print(df.to_string(index=False))
             print(f"\n合計 {len(df)} 件のデータ。")
 
-    except pd.io.sql.DatabaseError as e:
-        print(f"データベースの読み込み中にエラーが発生しました: {e}")
+    except Exception as e:
+        print(f"リーダーボードデータの読み込み中にエラーが発生しました: {e}")
         print(
-            f"'{table_name}' テーブルが存在しないか、データ形式に問題がある可能性があります。"
+            f"データストアの設定またはデータ形式に問題がある可能性があります。"
         )
-    except sqlite3.Error as e:
-        print(f"データベース接続中にエラーが発生しました: {e}")
 
 
 if __name__ == "__main__":
     view_leaderboard_data()
+

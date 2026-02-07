@@ -47,6 +47,11 @@ class DataStore(ABC):
         pass
 
     @abstractmethod
+    def write_ground_truth(self, df: pd.DataFrame, header: List[str]):
+        """正解データを書き込む。"""
+        pass
+
+    @abstractmethod
     def has_ground_truth(self) -> bool:
         """正解データが登録されているかを確認する。"""
         pass
@@ -141,6 +146,11 @@ class GoogleSheetDataStore(DataStore):
         updated_df = pd.concat([current_df, new_row_df], ignore_index=True)
 
         set_with_dataframe(worksheet, updated_df.reindex(columns=header), resize=True)
+
+    def write_ground_truth(self, df: pd.DataFrame, header: List[str]):
+        worksheet = self._get_worksheet(self.ground_truth_worksheet_name, header=header)
+        # 既存データを上書きする
+        set_with_dataframe(worksheet, df.reindex(columns=header), row=1, col=1, include_column_header=False, resize=True)
 
 
 class BaseDBDataStore(DataStore):
@@ -259,6 +269,15 @@ class BaseDBDataStore(DataStore):
             self.engine,
             if_exists="append",
             index=False,
+        )
+
+    def write_ground_truth(self, df: pd.DataFrame, header: List[str]):
+        self._create_table_if_not_exists(
+            self.ground_truth_table_name, header, is_ground_truth_table=True
+        )
+        # 既存データを上書きする
+        df.to_sql(
+            self.ground_truth_table_name, self.engine, if_exists="replace", index=False
         )
 
 
