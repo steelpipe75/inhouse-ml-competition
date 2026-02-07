@@ -19,16 +19,16 @@ jobs:
           uv pip install -r ./competition_files/playground/JupyterLite/requirements.txt
       - name: Build the JupyterLite site
         run: |
-          mkdir -p ./competition_files/playground/JupyterLite/content/data
-          cp -r ./competition_files/data ./competition_files/playground/JupyterLite/content/data
+          mkdir -p ./competition_files/playground/JupyterLite/content/
+          cp -r ./competition_files/data ./competition_files/playground/JupyterLite/content/
           uv run jupyter lite build --contents ./competition_files/playground/JupyterLite/content --output-dir ./dist/JupyterLite -y
       - name: Install marimo
         run: |
           uv pip install marimo
       - name: Build marimo
         run: |
-          mkdir -p ./competition_files/playground/marimo/public/data
-          cp -r ./competition_files/data ./competition_files/playground/marimo/public/data
+          mkdir -p ./competition_files/playground/marimo/public/
+          cp -r ./competition_files/data ./competition_files/playground/marimo/public/
           uv run marimo export html-wasm --sandbox --mode edit ./competition_files/playground/marimo/sample.py -o ./dist/marimo -f
       - name: Convert markdown
         env:
