@@ -103,6 +103,7 @@ for username, submissions in users_data.items():
                     now - timedelta(days=sub["days"], hours=sub["hours"])
                 ).strftime("%Y-%m-%d %H:%M:%S%z"),
                 "comment": sub["comment"],
+                "is_competition_running": True,  # テストデータなのでTrueとする
             }
         )
 
@@ -117,6 +118,7 @@ header = [
     "private_score",
     "submission_time",
     "comment",
+    "is_competition_running",
 ]
 df = df[header]
 

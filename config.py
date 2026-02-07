@@ -143,6 +143,7 @@ LEADERBOARD_HEADER: List[str] = [
     "public_score",
     "private_score",
     "submission_time",
+    "is_competition_running",
 ] + _additional_columns
 GROUND_TRUTH_HEADER: List[str] = ["id", "target", "Usage"]
 
