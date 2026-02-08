@@ -20,7 +20,7 @@ def show_register_ground_truth_message() -> None:
         "正解データが登録されていません。`ground_truth` を登録してください。\n\n"
         "登録するには、プロジェクトのルートディレクトリで以下のコマンドを実行してください：\n\n"
         "```\n"
-        "poetry run python scripts/register_ground_truth.py\n"
+        "uv run python ./for_admin/apps/register_ground_truth_app.py\n"
         "```"
     )
 
@@ -123,5 +123,3 @@ def check_password(always_protect: bool = False) -> None:
 
         # 認証が完了するまで、これ以降のコードは実行させない
         st.stop()
-
-

@@ -5,25 +5,34 @@ import pandas as pd
 import os
 
 from data_store import get_data_store
-# --- App Navigation ---
-NAVIGATION_PAGES = [
-    st.Page("contents/home.py", title="Home", icon=":material/home:"),
-    st.Page(
-        "contents/problem.py", title="概要・データ", icon=":material/menu_book:"
-    ),
-    st.Page("contents/submit.py", title="予測結果の投稿", icon=":material/send:"),
-    st.Page(
-        "contents/leaderboard.py",
-        title="リーダーボード",
-        icon=":material/leaderboard:",
-    ),
-]
 
-APP_NAVIGATION_PAGES = NAVIGATION_PAGES + [
-    st.Page(
-        "competition_files/contents/playground.py", title="playground", icon=":material/terminal:"
-    ),
-]
+
+# --- App Navigation ---
+def _get_NAVIGATION_PAGES():
+    return [
+        st.Page("contents/home.py", title="Home", icon=":material/home:"),
+        st.Page(
+            "contents/problem.py", title="概要・データ", icon=":material/menu_book:"
+        ),
+        st.Page("contents/submit.py", title="予測結果の投稿", icon=":material/send:"),
+        st.Page(
+            "contents/leaderboard.py",
+            title="リーダーボード",
+            icon=":material/leaderboard:",
+        ),
+    ]
+
+
+def get_APP_NAVIGATION_PAGES():
+    APP_NAVIGATION_PAGES = _get_NAVIGATION_PAGES() + [
+        st.Page(
+            "competition_files/contents/playground.py",
+            title="playground",
+            icon=":material/terminal:",
+        ),
+    ]
+
+    return APP_NAVIGATION_PAGES
 
 
 # --- Page Settings ---
@@ -71,7 +80,7 @@ if DATA_STORE_TYPE in ["postgresql", "mysql"]:
     try:
         # st.secretsからデータベース接続情報を取得
         conn_info = st.secrets["connections"][DATA_STORE_TYPE]
-        
+
         # 完全なURLが設定されていればそれを使用
         if "url" in conn_info and conn_info["url"]:
             DB_URL = conn_info["url"]
@@ -84,13 +93,15 @@ if DATA_STORE_TYPE in ["postgresql", "mysql"]:
             host = conn_info["host"]
             port = conn_info["port"]
             database = conn_info["database"]
-            
+
             if driver:
                 dialect_driver = f"{dialect}+{driver}"
             else:
                 dialect_driver = dialect
 
-            DB_URL = f"{dialect_driver}://{username}:{password}@{host}:{port}/{database}"
+            DB_URL = (
+                f"{dialect_driver}://{username}:{password}@{host}:{port}/{database}"
+            )
 
     except (FileNotFoundError, KeyError):
         # Streamlit Community Cloud 環境以外でsecrets.tomlがない場合や、
@@ -140,6 +151,7 @@ LEADERBOARD_HEADER: List[str] = [
     "public_score",
     "private_score",
     "submission_time",
+    "is_competition_running",
 ] + _additional_columns
 GROUND_TRUTH_HEADER: List[str] = ["id", "target", "Usage"]
 
@@ -218,11 +230,3 @@ def filter_leaderboard(leaderboard_df: pd.DataFrame) -> pd.DataFrame:
         df["submission_time"] = df["submission_time"].dt.tz_convert("Asia/Tokyo")
 
     return df
-
-
-# --- App Navigation ---
-APP_NAVIGATION_PAGES = NAVIGATION_PAGES + [
-    st.Page(
-        "competition_files/contents/playground.py", title="playground", icon=":material/terminal:"
-    ),
-]

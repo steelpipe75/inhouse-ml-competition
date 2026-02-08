@@ -19,20 +19,26 @@ jobs:
           uv pip install -r ./competition_files/playground/JupyterLite/requirements.txt
       - name: Build the JupyterLite site
         run: |
-          mkdir -p ./competition_files/playground/JupyterLite/content/data
-          cp -r ./competition_files/data ./competition_files/playground/JupyterLite/content/data
+          mkdir -p ./competition_files/playground/JupyterLite/content/
+          cp -r ./competition_files/data ./competition_files/playground/JupyterLite/content/
           uv run jupyter lite build --contents ./competition_files/playground/JupyterLite/content --output-dir ./dist/JupyterLite -y
       - name: Install marimo
         run: |
           uv pip install marimo
       - name: Build marimo
         run: |
-          mkdir -p ./competition_files/playground/marimo/public/data
-          cp -r ./competition_files/data ./competition_files/playground/marimo/public/data
+          mkdir -p ./competition_files/playground/marimo/public/
+          cp -r ./competition_files/data ./competition_files/playground/marimo/public/
           uv run marimo export html-wasm --sandbox --mode edit ./competition_files/playground/marimo/sample.py -o ./dist/marimo -f
       - name: Convert markdown
+        env:
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          GITHUB_REPOSITORY_NAME: ${{ github.event.repository.name }}
         run: |
           uv run ./competition_files/playground/index_md_convert.py ./competition_files/playground/index.md ./dist/index.html
+      - name: Build competition_builder
+        run: |
+          uv run marimo export html-wasm --sandbox --mode edit ./competition_builder/marimo_competion_builder.py -o ./dist/competition_builder -f
       - name: Copy file
         run: |
           cp  ./competition_files/playground/.nojekyll ./dist

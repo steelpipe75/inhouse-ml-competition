@@ -1,13 +1,12 @@
 import pandas as pd
-import numpy as np
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 import hashlib
 import os
 
 # データ生成の設定
-SALT = "gemini-cli-test-salt"
-OUTPUT_DIR = "dev_data"
+SALT = "test-salt"
+OUTPUT_DIR = "for_dev"
 OUTPUT_FILE = os.path.join(OUTPUT_DIR, "test_leaderboard_data.csv")
 
 JST = ZoneInfo("Asia/Tokyo")
@@ -103,6 +102,7 @@ for username, submissions in users_data.items():
                     now - timedelta(days=sub["days"], hours=sub["hours"])
                 ).strftime("%Y-%m-%d %H:%M:%S%z"),
                 "comment": sub["comment"],
+                "is_competition_running": True,  # テストデータなのでTrueとする
             }
         )
 
@@ -117,6 +117,7 @@ header = [
     "private_score",
     "submission_time",
     "comment",
+    "is_competition_running",
 ]
 df = df[header]
 

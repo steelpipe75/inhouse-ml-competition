@@ -108,6 +108,7 @@ def show_submission() -> None:
                             "submission_time": datetime.datetime.now(JST).strftime(
                                 "%Y-%m-%d %H:%M:%S%z"
                             ),
+                            "is_competition_running": IS_COMPETITION_RUNNING,
                         }
                         submission_data.update(additional_inputs)
                         if AUTH:

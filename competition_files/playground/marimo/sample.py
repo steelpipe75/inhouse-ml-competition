@@ -1,18 +1,25 @@
 # /// script
 # requires-python = ">=3.13"
 # dependencies = [
-#     "marimo>=0.19.7",
+#     "marimo>=0.19.0",
+#     "matplotlib==3.10.8",
+#     "numpy==2.4.2",
+#     "polars==1.38.1",
+#     "pyzmq>=27.1.0",
+#     "scikit-learn==1.8.0",
 # ]
 # ///
+
 import marimo
 
-__generated_with = "0.19.7"
+__generated_with = "0.19.9"
 app = marimo.App(width="full")
 
 
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
@@ -24,27 +31,42 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## polarsをインストール
+    ## WASM環境であればpolarsをインストール
     """)
     return
 
 
 @app.cell
 def _():
-    import micropip
+    import sys
+
+    return (sys,)
+
+
+@app.cell
+def _(sys):
+    IS_WASM = sys.platform == "emscripten"
+    return (IS_WASM,)
+
+
+@app.cell
+def _(IS_WASM):
+    if IS_WASM:
+        import micropip
     return (micropip,)
 
 
 @app.cell
-async def _(micropip):
-    await micropip.install("polars")
+async def _(IS_WASM, micropip):
+    if IS_WASM:
+        await micropip.install("polars")
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     ## ライブラリをインポート
@@ -60,6 +82,7 @@ def _():
     from sklearn.linear_model import LinearRegression as LR
     from matplotlib import pyplot as plt
     from sklearn.metrics import mean_squared_error as MSE
+
     return LR, np, pl, plt, train_test_split
 
 
@@ -125,7 +148,9 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    submit_csv_path = mo.notebook_location() / "public" / "data" / "sample_submission.csv"
+    submit_csv_path = (
+        mo.notebook_location() / "public" / "data" / "sample_submission.csv"
+    )
     submit_csv_path
     return (submit_csv_path,)
 
@@ -325,9 +350,7 @@ def _(mo):
 
 @app.cell
 def _(pl, submit, y_pred_test):
-    my_submit = submit.with_columns(
-        pl.Series("target", y_pred_test)
-    )
+    my_submit = submit.with_columns(pl.Series("target", y_pred_test))
     return (my_submit,)
 
 

@@ -1,5 +1,11 @@
-# 内輪向けの機械学習コンペ playground用
+# 内輪向けの機械学習コンペ
+
+## playground用
 
 - [JupyterLite](./JupyterLite/)
 - [marimo](./marimo/)
-- [Colab](https://colab.research.google.com/github/steelpipe75/inhouse-ml-competition/blob/main/competition_files/playground/Colab/sample.ipynb)
+- [Colab](COLAB_LINK_PLACEHOLDER)
+
+## 作問支援スクリプト
+
+- [competition_builder](./competition_builder/)
