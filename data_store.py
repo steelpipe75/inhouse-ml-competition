@@ -143,7 +143,10 @@ class GoogleSheetDataStore(DataStore):
         # 常に新しい行として追加する
         current_df = self.read_leaderboard(header)
         new_row_df = pd.DataFrame([submission_data], columns=header)
-        updated_df = pd.concat([current_df, new_row_df], ignore_index=True)
+        if current_df.empty:
+            updated_df = new_row_df.copy()
+        else:
+            updated_df = pd.concat([current_df, new_row_df], ignore_index=True)
 
         set_with_dataframe(worksheet, updated_df.reindex(columns=header), resize=True)
 
